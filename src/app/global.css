@@ -50,6 +50,10 @@
     --destructive: 0 62.8% 60.6%;
     --destructive-foreground: 0 0% 98%;
     --ring: 160 84% 39%;
+    
+    /* Fumadocs sidebar active color - emerald */
+    --color-fd-primary: hsl(160, 84%, 39%);
+    --color-fd-primary-foreground: hsl(0, 0%, 3.9%);
   }
 
   code, pre, .font-mono {
