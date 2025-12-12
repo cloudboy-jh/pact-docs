@@ -1,7 +1,8 @@
 import defaultMdxComponents from 'fumadocs-ui/mdx';
 import type { MDXComponents } from 'mdx/types';
 
-export function getMDXComponents(components?: MDXComponents): MDXComponents {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getMDXComponents(components?: MDXComponents): any {
   return {
     ...defaultMdxComponents,
     ...components,
