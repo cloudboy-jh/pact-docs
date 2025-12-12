@@ -1,0 +1,64 @@
+---
+title: Architecture
+description: Technical overview of Pact's architecture and design
+---
+# Architecture
+
+Pact consists of three main components that work together.
+
+## Overview
+
+```txt
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│   CLI (Go)  │────▶│   GitHub    │◀────│  Web App    │
+│             │     │  (my-pact)  │     │ (SvelteKit) │
+└─────────────┘     └─────────────┘     └─────────────┘
+       │                                       │
+       ▼                                       ▼
+┌─────────────┐                         ┌─────────────┐
+│  OS Keychain│                         │  Browser    │
+│  (secrets)  │                         │ localStorage│
+└─────────────┘                         └─────────────┘
+```
+
+## Components
+
+### CLI (Go)
+
+The command-line interface for syncing and managing configurations.
+
+**Tech Stack:**
+
+| Package | Purpose |
+|---------|---------|
+| `spf13/cobra` | Command-line parsing |
+| `charmbracelet/bubbletea` | TUI framework |
+| `charmbracelet/lipgloss` | TUI styling |
+| `go-git/go-git/v5` | Git operations |
+| `zalando/go-keyring` | OS keychain access |
+
+### Web App (SvelteKit)
+
+Browser-based editor and dashboard.
+
+**Tech Stack:**
+
+| Technology | Purpose |
+|------------|---------|
+| SvelteKit | Framework |
+| Tailwind CSS | Styling |
+| CodeMirror 6 | Code editor |
+| Lucide Svelte | Icons |
+
+### GitHub Repository
+
+Your `my-pact` repo is the database — no separate backend needed.
+
+## Design Principles
+
+1. **GitHub is the database**: No separate backend, your repo is the source of truth
+2. **Edit anywhere**: Local editor or web UI, your choice
+3. **Cross-OS by default**: Darwin, Windows, Linux configs coexist
+4. **Secrets stay local**: API keys in OS keychain, never in repo
+5. **Files not strings**: Configs as files, not inline JSON
+6. **Local-first**: `.pact/` folder lives in your project directory

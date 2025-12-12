@@ -1,0 +1,257 @@
+---
+title: Theme Module
+description: Manage colors, wallpapers, icons, and visual customizations
+---
+# Theme Module
+
+The theme module manages visual customizations: color schemes, wallpapers, icons, and more.
+
+## Configuration
+
+```json
+{
+  "modules": {
+    "theme": {
+      "colors": {
+        "source": "./theme/colors.json",
+        "target": "~/.config/colors/scheme.json"
+      },
+      "wallpaper": {
+        "source": "./theme/wallpaper.png",
+        "target": "~/.config/wallpaper/current.png"
+      },
+      "gtk": {
+        "source": "./theme/gtk/",
+        "target": "~/.config/gtk-3.0/"
+      },
+      "icons": {
+        "source": "./theme/icons/",
+        "target": "~/.local/share/icons/custom/"
+      }
+    }
+  }
+}
+```
+
+## File Structure
+
+```
+my-pact/
+├── theme/
+│   ├── colors.json
+│   ├── wallpaper.png
+│   ├── wallpaper-dark.png
+│   ├── gtk/
+│   │   ├── settings.ini
+│   │   └── gtk.css
+│   └── icons/
+└── pact.json
+```
+
+## Color Schemes
+
+Store your color scheme as JSON for easy reference and use:
+
+### colors.json
+
+```json
+{
+  "name": "Catppuccin Mocha",
+  "type": "dark",
+  "colors": {
+    "background": "#1e1e2e",
+    "foreground": "#cdd6f4",
+    "cursor": "#f5e0dc",
+    "selection": "#45475a",
+    
+    "black": "#45475a",
+    "red": "#f38ba8",
+    "green": "#a6e3a1",
+    "yellow": "#f9e2af",
+    "blue": "#89b4fa",
+    "magenta": "#f5c2e7",
+    "cyan": "#94e2d5",
+    "white": "#bac2de",
+    
+    "brightBlack": "#585b70",
+    "brightRed": "#f38ba8",
+    "brightGreen": "#a6e3a1",
+    "brightYellow": "#f9e2af",
+    "brightBlue": "#89b4fa",
+    "brightMagenta": "#f5c2e7",
+    "brightCyan": "#94e2d5",
+    "brightWhite": "#a6adc8"
+  }
+}
+```
+
+## Wallpapers
+
+Store wallpapers for consistent aesthetics:
+
+```json
+{
+  "wallpaper": {
+    "source": "./theme/wallpaper.png",
+    "target": "~/.config/wallpaper/current.png"
+  },
+  "wallpaper-dark": {
+    "source": "./theme/wallpaper-dark.png",
+    "target": "~/.config/wallpaper/dark.png"
+  }
+}
+```
+
+
+Pact syncs wallpaper files but doesn't automatically set them as your desktop background. Use your OS's wallpaper settings to point to the synced location.
+
+
+### macOS Wallpaper Script
+
+```bash
+#!/bin/bash
+# Set wallpaper from synced location
+osascript -e 'tell application "Finder" to set desktop picture to POSIX file "~/.config/wallpaper/current.png"'
+```
+
+### Linux (GNOME) Wallpaper
+
+```bash
+gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.config/wallpaper/current.png"
+```
+
+## GTK Theming (Linux)
+
+### gtk/settings.ini
+
+```ini
+[Settings]
+gtk-theme-name=Catppuccin-Mocha-Standard-Mauve-Dark
+gtk-icon-theme-name=Papirus-Dark
+gtk-font-name=Inter 11
+gtk-cursor-theme-name=Catppuccin-Mocha-Dark-Cursors
+gtk-cursor-theme-size=24
+gtk-application-prefer-dark-theme=1
+```
+
+### gtk/gtk.css
+
+```css
+/* Custom GTK CSS */
+.titlebar {
+  background: #1e1e2e;
+  color: #cdd6f4;
+}
+
+headerbar {
+  background: #1e1e2e;
+}
+```
+
+## Icon Packs
+
+Reference icon pack preferences:
+
+```json
+{
+  "theme": {
+    "icons": {
+      "pack": "Papirus-Dark",
+      "folders": "Catppuccin-Mocha"
+    }
+  }
+}
+```
+
+## Fonts Configuration
+
+```json
+{
+  "fonts": {
+    "install": [
+      "JetBrains Mono",
+      "Fira Code",
+      "Inter",
+      "SF Mono"
+    ]
+  }
+}
+```
+
+The fonts module is a reference list. Install fonts using:
+
+```bash
+# macOS
+brew install --cask font-jetbrains-mono
+
+# Linux
+sudo apt install fonts-jetbrains-mono
+```
+
+## Popular Color Schemes
+
+### Catppuccin
+
+```json
+{
+  "name": "Catppuccin Mocha",
+  "background": "#1e1e2e",
+  "foreground": "#cdd6f4"
+}
+```
+
+### Dracula
+
+```json
+{
+  "name": "Dracula",
+  "background": "#282a36",
+  "foreground": "#f8f8f2"
+}
+```
+
+### Tokyo Night
+
+```json
+{
+  "name": "Tokyo Night",
+  "background": "#1a1b26",
+  "foreground": "#c0caf5"
+}
+```
+
+### Nord
+
+```json
+{
+  "name": "Nord",
+  "background": "#2e3440",
+  "foreground": "#d8dee9"
+}
+```
+
+## Syncing
+
+```bash
+pact sync theme
+```
+
+## Using Colors in Configs
+
+Reference your color scheme in other configs:
+
+```lua
+-- Neovim: Load colors from JSON
+local colors = vim.fn.json_decode(vim.fn.readfile(vim.fn.expand("~/.config/colors/scheme.json")))
+vim.api.nvim_set_hl(0, "Normal", { bg = colors.colors.background, fg = colors.colors.foreground })
+```
+
+```bash
+# Shell: Export colors
+export COLOR_BG=$(jq -r '.colors.background' ~/.config/colors/scheme.json)
+export COLOR_FG=$(jq -r '.colors.foreground' ~/.config/colors/scheme.json)
+```
+
+
+Keeping a centralized color scheme file makes it easy to maintain consistent theming across all your tools.
+

@@ -1,0 +1,191 @@
+---
+title: Core Concepts
+description: Understand the key concepts behind Pact
+---
+# Core Concepts
+
+Understanding these concepts will help you get the most out of Pact.
+
+## The `.pact/` Directory
+
+Pact creates a `.pact/` folder in your project directory, similar to how Git creates a `.git/` folder.
+
+```
+my-project/
+├── .pact/                 # Your pact repo (cloned from GitHub)
+│   ├── pact.json          # Configuration manifest
+│   ├── shell/
+│   ├── editor/
+│   └── ...
+├── src/
+└── package.json
+```
+
+**Directory Resolution:**
+1. CLI searches for `.pact/` in the current directory
+2. Walks up the directory tree (like git)
+3. Falls back to `~/.pact/` for backwards compatibility
+
+## The `pact.json` Manifest
+
+The `pact.json` file is the heart of your Pact configuration. It defines:
+
+- **Modules**: Groups of related configs (shell, editor, git, etc.)
+- **Sources**: Where your config files live in the pact repo
+- **Targets**: Where configs should be applied on your system
+- **Strategies**: How to apply configs (symlink or copy)
+- **Secrets**: What secrets your configs need
+
+```json
+{
+  "version": "1.0.0",
+  "user": "your-username",
+  "modules": {
+    "shell": {
+      "darwin": {
+        "source": "./shell/darwin.zshrc",
+        "target": "~/.zshrc",
+        "strategy": "symlink"
+      }
+    }
+  },
+  "secrets": ["ANTHROPIC_API_KEY"]
+}
+```
+
+## Modules
+
+Modules are logical groups of configuration files. Pact supports these module types:
+
+| Module | Description |
+|--------|-------------|
+| `shell` | Shell configs (.zshrc, .bashrc, profile.ps1) |
+| `editor` | Editor configs (nvim, vscode, cursor) |
+| `terminal` | Terminal emulator configs |
+| `git` | Git configuration files |
+| `ai` | AI prompts, agents, providers |
+| `tools` | CLI tool configs (lazygit, ripgrep) |
+| `keybindings` | Editor keybindings |
+| `snippets` | Code snippets |
+| `fonts` | Font preferences |
+| `theme` | Colors, wallpapers, icons |
+
+## Sync Strategies
+
+Pact supports two strategies for applying configs:
+
+### Symlink (Default)
+
+Creates a symbolic link from target to source. Changes in `.pact/` are immediately reflected.
+
+```json
+{
+  "source": "./shell/zshrc",
+  "target": "~/.zshrc",
+  "strategy": "symlink"
+}
+```
+
+
+Use symlinks when you want edits to your config to be immediately available and automatically tracked.
+
+
+### Copy
+
+Copies the file to the target location. Use when the application doesn't follow symlinks.
+
+```json
+{
+  "source": "./shell/zshrc",
+  "target": "~/.zshrc",
+  "strategy": "copy"
+}
+```
+
+## Cross-OS Support
+
+Pact supports macOS (darwin), Linux, and Windows. Configs can be OS-specific:
+
+```json
+{
+  "shell": {
+    "darwin": {
+      "source": "./shell/darwin.zshrc",
+      "target": "~/.zshrc"
+    },
+    "linux": {
+      "source": "./shell/linux.zshrc",
+      "target": "~/.zshrc"
+    },
+    "windows": {
+      "source": "./shell/windows.ps1",
+      "target": "~/Documents/PowerShell/profile.ps1"
+    }
+  }
+}
+```
+
+Targets can also be OS-specific:
+
+```json
+{
+  "editor": {
+    "neovim": {
+      "source": "./editor/nvim/",
+      "target": {
+        "darwin": "~/.config/nvim",
+        "linux": "~/.config/nvim",
+        "windows": "~/AppData/Local/nvim"
+      }
+    }
+  }
+}
+```
+
+## Secrets
+
+Secrets (API keys, tokens) are stored in your OS keychain, **never** in the repo.
+
+```json
+{
+  "secrets": [
+    "ANTHROPIC_API_KEY",
+    "OPENAI_API_KEY",
+    "GITHUB_TOKEN"
+  ]
+}
+```
+
+Manage secrets with:
+
+```bash
+pact secret set ANTHROPIC_API_KEY   # Store a secret
+pact secret list                     # List secrets
+pact secret remove ANTHROPIC_API_KEY # Remove a secret
+```
+
+| OS | Keychain Backend |
+|----|------------------|
+| macOS | Keychain |
+| Linux | libsecret / gnome-keyring |
+| Windows | Windows Credential Manager |
+
+## GitHub as Database
+
+Pact uses GitHub as its database. There's no separate backend — your `my-pact` repo is the source of truth.
+
+Benefits:
+- **Version history**: Git tracks all changes
+- **Collaboration**: Share configs via GitHub
+- **Portability**: Works anywhere GitHub is accessible
+- **Backup**: Your configs are backed up automatically
+
+## Edit Anywhere
+
+Pact supports multiple ways to edit your configurations:
+
+1. **Local Editor**: `pact edit` opens files in your `$EDITOR`
+2. **Web Editor**: `pact edit web` opens a browser-based editor
+3. **Direct Edit**: Modify files in `.pact/` directly, then `pact push`
+
+All methods sync through GitHub, so changes are available everywhere.

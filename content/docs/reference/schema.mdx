@@ -1,0 +1,43 @@
+---
+title: JSON Schema
+description: Complete JSON schema for pact.json
+---
+# JSON Schema
+
+Complete schema reference for `pact.json`.
+
+## Basic Structure
+
+```json
+{
+  "version": "1.0.0",
+  "user": "username",
+  "modules": {
+    "shell": {},
+    "editor": {},
+    "git": {},
+    "ai": {},
+    "tools": {},
+    "theme": {}
+  },
+  "secrets": []
+}
+```
+
+## Module Entry Schema
+
+```json
+{
+  "source": "./path/to/file",
+  "target": "~/path/to/target",
+  "strategy": "symlink"
+}
+```
+
+### Fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `source` | string | Yes | Path relative to `.pact/` |
+| `target` | string or object | Yes | Target path or OS-specific paths |
+| `strategy` | string | No | `symlink` (default) or `copy` |

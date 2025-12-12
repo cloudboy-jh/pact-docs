@@ -1,0 +1,256 @@
+---
+title: AI Module
+description: Configure AI prompts, agents, and provider settings
+---
+# AI Module
+
+The AI module manages your AI-related configurations: prompts, agents, and provider settings.
+
+## Configuration
+
+```json
+{
+  "modules": {
+    "ai": {
+      "providers": {
+        "anthropic": {
+          "defaultModel": "claude-sonnet-4-20250514",
+          "models": ["claude-sonnet-4-20250514", "claude-3-haiku-20240307"]
+        },
+        "openai": {
+          "defaultModel": "gpt-4o",
+          "models": ["gpt-4o", "gpt-4o-mini"]
+        }
+      },
+      "prompts": {
+        "default": "prompts/default.md",
+        "code-review": "prompts/code-review.md",
+        "commit-message": "prompts/commit-message.md"
+      },
+      "skills": "skills/",
+      "agents": {
+        "claude": {
+          "source": "./agents/CLAUDE.md",
+          "target": "~/.config/claude/CLAUDE.md"
+        },
+        "cursor": {
+          "source": "./agents/.cursorrules"
+        }
+      }
+    }
+  }
+}
+```
+
+## File Structure
+
+```
+my-pact/
+├── prompts/
+│   ├── default.md
+│   ├── code-review.md
+│   └── commit-message.md
+├── skills/
+│   ├── typescript.md
+│   └── react.md
+├── agents/
+│   ├── CLAUDE.md
+│   └── .cursorrules
+└── pact.json
+```
+
+## Prompts
+
+Store reusable prompts as markdown files:
+
+### default.md
+
+```markdown
+# Default System Prompt
+
+You are a helpful AI assistant. Be concise, accurate, and helpful.
+
+## Guidelines
+
+- Provide clear, actionable responses
+- Ask clarifying questions when needed
+- Cite sources when making factual claims
+- Admit uncertainty when appropriate
+```
+
+### code-review.md
+
+```markdown
+# Code Review Prompt
+
+Review the following code for:
+
+1. **Bugs**: Logic errors, edge cases, potential crashes
+2. **Performance**: Inefficient algorithms, unnecessary operations
+3. **Security**: Injection vulnerabilities, data exposure
+4. **Style**: Naming conventions, code organization
+5. **Best Practices**: Design patterns, SOLID principles
+
+Provide specific, actionable feedback with code examples.
+```
+
+### commit-message.md
+
+```markdown
+# Commit Message Generator
+
+Generate a commit message following conventional commits format:
+
+- type(scope): description
+- Types: feat, fix, docs, style, refactor, test, chore
+- Keep description under 72 characters
+- Use imperative mood ("add" not "added")
+
+Analyze the diff and generate an appropriate message.
+```
+
+## Agents
+
+Agent files configure AI assistants for specific tools.
+
+### CLAUDE.md
+
+For [Claude Code](https://claude.ai):
+
+```markdown
+# Claude Configuration
+
+## Project Context
+
+This is a TypeScript/React project using Next.js.
+
+## Coding Standards
+
+- Use functional components with hooks
+- Prefer TypeScript strict mode
+- Use TailwindCSS for styling
+- Follow Airbnb style guide
+
+## Testing
+
+- Write tests with Jest and React Testing Library
+- Aim for 80% code coverage
+- Test behavior, not implementation
+
+## Git Workflow
+
+- Use conventional commits
+- Keep PRs small and focused
+- Squash merge to main
+```
+
+### .cursorrules
+
+For [Cursor](https://cursor.sh):
+
+```yaml
+# Cursor Rules
+
+## Preferences
+- Always use TypeScript
+- Prefer functional programming
+- Use async/await over callbacks
+
+## Code Style
+- 2 space indentation
+- Single quotes for strings
+- No semicolons
+
+## Testing
+- Write tests for new features
+- Use describe/it blocks
+
+## Documentation
+- JSDoc for public APIs
+- README for new packages
+```
+
+## Provider Configuration
+
+Configure default models for different providers:
+
+```json
+{
+  "providers": {
+    "anthropic": {
+      "defaultModel": "claude-sonnet-4-20250514",
+      "models": [
+        "claude-sonnet-4-20250514",
+        "claude-3-haiku-20240307",
+        "claude-3-opus-20240229"
+      ]
+    },
+    "openai": {
+      "defaultModel": "gpt-4o",
+      "models": ["gpt-4o", "gpt-4o-mini", "o1-preview"]
+    }
+  }
+}
+```
+
+
+Provider configuration is metadata only. API keys should be stored using `pact secret`.
+
+
+## Skills
+
+Skills are specialized prompts for specific technologies:
+
+### typescript.md
+
+```markdown
+# TypeScript Expert
+
+You are a TypeScript expert. When writing TypeScript:
+
+- Use strict type checking
+- Prefer interfaces over type aliases for objects
+- Use generics for reusable code
+- Leverage discriminated unions for state machines
+- Use const assertions where appropriate
+```
+
+## Syncing Agents
+
+Agents with targets get synced to your system:
+
+```bash
+pact sync ai
+```
+
+Agents without targets (like `.cursorrules`) are reference files that you can copy manually or use in your projects.
+
+## Using Prompts
+
+Prompts in your pact repo can be:
+
+1. **Copied into AI tools**: Paste into Claude, ChatGPT, etc.
+2. **Referenced in scripts**: Build automation around your prompts
+3. **Shared with teams**: Version-controlled prompt engineering
+
+
+Use `pact edit web` to edit prompts with syntax highlighting and preview.
+
+
+## Secrets for AI
+
+Store API keys securely:
+
+```json
+{
+  "secrets": [
+    "ANTHROPIC_API_KEY",
+    "OPENAI_API_KEY"
+  ]
+}
+```
+
+```bash
+pact secret set ANTHROPIC_API_KEY
+pact secret set OPENAI_API_KEY
+```

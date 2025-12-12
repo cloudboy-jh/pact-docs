@@ -1,0 +1,234 @@
+---
+title: Editor Module
+description: Manage editor configurations for Neovim, VS Code, Cursor, and more
+---
+# Editor Module
+
+The editor module manages configurations for various code editors.
+
+## Configuration
+
+```json
+{
+  "modules": {
+    "editor": {
+      "neovim": {
+        "source": "./editor/nvim/",
+        "target": {
+          "darwin": "~/.config/nvim",
+          "linux": "~/.config/nvim",
+          "windows": "~/AppData/Local/nvim"
+        },
+        "strategy": "symlink"
+      },
+      "vscode": {
+        "source": "./editor/vscode/settings.json",
+        "target": {
+          "darwin": "~/Library/Application Support/Code/User/settings.json",
+          "linux": "~/.config/Code/User/settings.json",
+          "windows": "~/AppData/Roaming/Code/User/settings.json"
+        }
+      },
+      "cursor": {
+        "source": "./editor/cursor/settings.json",
+        "target": {
+          "darwin": "~/Library/Application Support/Cursor/User/settings.json",
+          "linux": "~/.config/Cursor/User/settings.json",
+          "windows": "~/AppData/Roaming/Cursor/User/settings.json"
+        }
+      }
+    }
+  }
+}
+```
+
+## File Structure
+
+```txt
+my-pact/
+├── editor/
+│   ├── nvim/
+│   │   ├── init.lua
+│   │   └── lua/
+│   │       ├── plugins/
+│   │       ├── config/
+│   │       └── keymaps.lua
+│   ├── vscode/
+│   │   ├── settings.json
+│   │   ├── keybindings.json
+│   │   └── snippets/
+│   └── cursor/
+│       └── settings.json
+└── pact.json
+```
+
+## Neovim
+
+Neovim configs are typically a directory:
+
+```json
+{
+  "neovim": {
+    "source": "./editor/nvim/",
+    "target": "~/.config/nvim"
+  }
+}
+```
+
+### init.lua Example
+
+```lua
+-- init.lua
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
+
+-- Options
+vim.opt.number = true
+vim.opt.relativenumber = true
+vim.opt.tabstop = 2
+vim.opt.shiftwidth = 2
+vim.opt.expandtab = true
+vim.opt.smartindent = true
+vim.opt.termguicolors = true
+
+-- Keymaps
+vim.keymap.set("n", "<leader>w", "<cmd>w<cr>")
+vim.keymap.set("n", "<leader>q", "<cmd>q<cr>")
+
+-- Load plugins
+require("plugins")
+```
+
+### Lazy.nvim Setup
+
+```lua
+-- lua/plugins/init.lua
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git", "clone", "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable", lazypath,
+  })
+end
+vim.opt.rtp:prepend(lazypath)
+
+require("lazy").setup({
+  { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
+  { "nvim-telescope/telescope.nvim", dependencies = { "nvim-lua/plenary.nvim" } },
+  { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
+})
+
+vim.cmd.colorscheme "catppuccin"
+```
+
+## VS Code
+
+VS Code settings are JSON files:
+
+```json
+{
+  "vscode": {
+    "source": "./editor/vscode/settings.json",
+    "target": "~/Library/Application Support/Code/User/settings.json"
+  }
+}
+```
+
+Example `settings.json`:
+
+```json
+{
+  "editor.fontFamily": "JetBrains Mono",
+  "editor.fontSize": 14,
+  "editor.tabSize": 2,
+  "editor.formatOnSave": true,
+  "editor.minimap.enabled": false,
+  "workbench.colorTheme": "Catppuccin Mocha",
+  "terminal.integrated.fontFamily": "JetBrains Mono",
+  "files.autoSave": "onFocusChange"
+}
+```
+
+## Cursor
+
+Cursor uses the same settings format as VS Code:
+
+```json
+{
+  "cursor": {
+    "source": "./editor/cursor/settings.json",
+    "target": "~/Library/Application Support/Cursor/User/settings.json"
+  }
+}
+```
+
+## Keybindings
+
+Store keybindings separately:
+
+```json
+{
+  "keybindings": {
+    "vscode": {
+      "source": "./keybindings/vscode.json",
+      "target": "~/Library/Application Support/Code/User/keybindings.json"
+    }
+  }
+}
+```
+
+## Snippets
+
+Store code snippets:
+
+```json
+{
+  "snippets": {
+    "vscode": {
+      "source": "./snippets/vscode/",
+      "target": "~/Library/Application Support/Code/User/snippets/"
+    }
+  }
+}
+```
+
+## Target Paths by OS
+
+### VS Code
+
+| OS | Path |
+|----|------|
+| macOS | `~/Library/Application Support/Code/User/` |
+| Linux | `~/.config/Code/User/` |
+| Windows | `~/AppData/Roaming/Code/User/` |
+
+### Cursor
+
+| OS | Path |
+|----|------|
+| macOS | `~/Library/Application Support/Cursor/User/` |
+| Linux | `~/.config/Cursor/User/` |
+| Windows | `~/AppData/Roaming/Cursor/User/` |
+
+### Neovim
+
+| OS | Path |
+|----|------|
+| macOS | `~/.config/nvim` |
+| Linux | `~/.config/nvim` |
+| Windows | `~/AppData/Local/nvim` |
+
+## Syncing
+
+```bash
+# Sync all editor configs
+pact sync editor
+
+# Or include in interactive sync
+pact sync
+```
+
+
+Use symlinks for editor configs so changes are immediately reflected. This is especially useful when tweaking your Neovim setup.
+

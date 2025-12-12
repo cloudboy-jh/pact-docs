@@ -1,0 +1,128 @@
+---
+title: Quick Start
+description: Get up and running with Pact in minutes
+---
+# Quick Start
+
+This guide will get you from zero to a fully synced development environment.
+
+## Overview
+
+Pact works like `git` — it creates a `.pact/` folder in your project directory that contains all your configuration files. Your GitHub token is stored globally in your OS keychain.
+
+## 1. Install Pact
+
+```bash
+brew install cloudboy-jh/tap/pact
+```
+
+## 2. Navigate to your project
+
+```bash
+cd my-project
+```
+
+## 3. Initialize Pact
+
+```bash
+pact init
+```
+
+This will:
+1. Open your browser for GitHub authentication
+2. Create a `my-pact` repo in your GitHub account (if it doesn't exist)
+3. Clone it to `./.pact/` in your current directory
+4. Create a default `pact.json` configuration
+
+## 4. Add your configurations
+
+Edit your pact configuration:
+
+```bash
+pact edit                 # Opens pact.json in your $EDITOR
+pact edit shell           # Edit shell configs
+pact edit web             # Open web editor in browser
+```
+
+## 5. Sync your configs
+
+```bash
+pact sync
+```
+
+This will show an interactive module picker:
+
+```txt
+Found 6 modules in pact.json:
+
+  [1] shell        2 files
+  [2] editor       12 files (nvim, vscode)
+  [3] git          2 files
+  [4] ai           3 files (prompts, agents)
+  [5] tools        1 file
+  [6] theme        4 files (colors, wallpaper)
+
+Select modules: 1,2,6
+```
+
+## 6. Check status
+
+```bash
+pact
+```
+
+This shows an interactive status display with quick actions.
+
+## On a New Machine
+
+When you're setting up a new machine or a new project:
+
+```bash
+cd my-project
+pact init                 # Clones your existing pact repo to ./.pact/
+pact sync                 # Applies all configs
+```
+
+Changes sync through GitHub — edit on one machine, pull on another.
+
+## Common Commands
+
+| Command | Description |
+|---------|-------------|
+| `pact` | Interactive status with quick actions |
+| `pact init` | Initialize pact in current directory |
+| `pact edit` | Edit pact.json in $EDITOR |
+| `pact edit web` | Open web editor |
+| `pact sync` | Interactive sync with module picker |
+| `pact sync shell` | Sync specific module |
+| `pact push` | Commit and push changes |
+| `pact status` | Show status (non-interactive) |
+
+## Example Workflow
+
+Here's a typical workflow for managing your development environment:
+
+```bash
+# Start a new project
+cd new-project
+pact init
+
+# Add some shell customizations
+pact edit shell/zshrc     # Edit your shell config
+pact push -m "Add custom aliases"
+
+# On another machine
+cd new-project
+pact init                 # Clones same pact repo
+pact sync shell           # Apply shell configs
+```
+
+
+Use `pact edit web` to edit your configurations in a beautiful web interface with syntax highlighting and visual editing.
+
+
+## Next Steps
+
+- Learn about [CLI Commands](/docs/cli/overview)
+- Understand [pact.json configuration](/docs/configuration/pact-json)
+- Set up [secrets](/docs/cli/secrets) for API keys

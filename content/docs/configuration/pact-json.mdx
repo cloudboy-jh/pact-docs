@@ -1,0 +1,317 @@
+---
+title: pact.json Reference
+description: Complete reference for the pact.json configuration file
+---
+# pact.json Reference
+
+The `pact.json` file is the manifest that defines your entire Pact configuration.
+
+## Location
+
+The file is located at `.pact/pact.json` in your project directory.
+
+## Full Schema
+
+```json
+{
+  "version": "1.0.0",
+  "user": "username",
+  "modules": {
+    "shell": { ... },
+    "editor": { ... },
+    "terminal": { ... },
+    "git": { ... },
+    "ai": { ... },
+    "tools": { ... },
+    "keybindings": { ... },
+    "snippets": { ... },
+    "fonts": { ... },
+    "runtimes": { ... },
+    "theme": { ... }
+  },
+  "secrets": [
+    "ANTHROPIC_API_KEY",
+    "OPENAI_API_KEY"
+  ]
+}
+```
+
+## Top-Level Fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `version` | string | Yes | Schema version (currently "1.0.0") |
+| `user` | string | Yes | Your GitHub username |
+| `modules` | object | Yes | Configuration modules |
+| `secrets` | string[] | No | List of required secrets |
+
+## Module Entry Schema
+
+Most modules follow this pattern:
+
+```json
+{
+  "module-name": {
+    "entry-name": {
+      "source": "./path/to/file",
+      "target": "~/path/to/target",
+      "strategy": "symlink"
+    }
+  }
+}
+```
+
+### Fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `source` | string | Yes | Path relative to `.pact/` |
+| `target` | string \| object | Yes | Target path or OS-specific paths |
+| `strategy` | string | No | `"symlink"` (default) or `"copy"` |
+
+### OS-Specific Targets
+
+```json
+{
+  "target": {
+    "darwin": "~/.config/app",
+    "linux": "~/.config/app",
+    "windows": "~/AppData/Local/app"
+  }
+}
+```
+
+## Complete Example
+
+```json
+{
+  "version": "1.0.0",
+  "user": "cloudboy-jh",
+  "modules": {
+    "shell": {
+      "darwin": {
+        "source": "./shell/darwin.zshrc",
+        "target": "~/.zshrc",
+        "strategy": "symlink"
+      },
+      "linux": {
+        "source": "./shell/linux.zshrc",
+        "target": "~/.zshrc"
+      },
+      "windows": {
+        "source": "./shell/windows.ps1",
+        "target": "~/Documents/PowerShell/profile.ps1",
+        "strategy": "copy"
+      }
+    },
+    "editor": {
+      "neovim": {
+        "source": "./editor/nvim/",
+        "target": {
+          "darwin": "~/.config/nvim",
+          "linux": "~/.config/nvim",
+          "windows": "~/AppData/Local/nvim"
+        }
+      },
+      "vscode": {
+        "source": "./editor/vscode/settings.json",
+        "target": "~/.config/Code/User/settings.json"
+      }
+    },
+    "terminal": {
+      "emulator": "ghostty",
+      "source": "./terminal/ghostty.conf",
+      "target": "~/.config/ghostty/config"
+    },
+    "git": {
+      "config": {
+        "source": "./git/.gitconfig",
+        "target": "~/.gitconfig"
+      },
+      "ignore": {
+        "source": "./git/.gitignore_global",
+        "target": "~/.gitignore_global"
+      }
+    },
+    "ai": {
+      "providers": {
+        "anthropic": {
+          "defaultModel": "claude-sonnet-4-20250514",
+          "models": ["claude-sonnet-4-20250514", "claude-3-haiku-20240307"]
+        }
+      },
+      "prompts": {
+        "default": "prompts/default.md",
+        "code-review": "prompts/code-review.md"
+      },
+      "skills": "skills/",
+      "agents": {
+        "claude": {
+          "source": "./agents/CLAUDE.md",
+          "target": "~/.config/claude/CLAUDE.md"
+        },
+        "cursor": {
+          "source": "./agents/.cursorrules"
+        }
+      }
+    },
+    "tools": {
+      "configs": {
+        "lazygit": {
+          "source": "./tools/lazygit.yml",
+          "target": "~/.config/lazygit/config.yml"
+        }
+      },
+      "packages": {
+        "brew": ["ripgrep", "fzf", "bat"],
+        "npm": ["typescript", "eslint"],
+        "cargo": ["exa"],
+        "go": ["github.com/jesseduffield/lazygit"]
+      }
+    },
+    "keybindings": {
+      "vscode": {
+        "source": "./keybindings/vscode.json",
+        "target": "~/.config/Code/User/keybindings.json"
+      }
+    },
+    "snippets": {
+      "vscode": {
+        "source": "./snippets/vscode/",
+        "target": "~/.config/Code/User/snippets/"
+      }
+    },
+    "fonts": {
+      "install": ["JetBrains Mono", "Fira Code"]
+    },
+    "runtimes": {
+      "node": "20.10.0",
+      "python": "3.12.0",
+      "go": "1.22.0",
+      "manager": "asdf"
+    },
+    "theme": {
+      "colors": {
+        "source": "./theme/colors.json",
+        "target": "~/.config/colors/scheme.json"
+      },
+      "wallpaper": {
+        "source": "./theme/wallpaper.png",
+        "target": "~/.config/wallpaper/current.png"
+      }
+    }
+  },
+  "secrets": [
+    "ANTHROPIC_API_KEY",
+    "OPENAI_API_KEY",
+    "GITHUB_TOKEN"
+  ]
+}
+```
+
+## Special Module Types
+
+### Terminal Module
+
+Single-entry with `emulator` field:
+
+```json
+{
+  "terminal": {
+    "emulator": "ghostty",
+    "source": "./terminal/ghostty.conf",
+    "target": "~/.config/ghostty/config"
+  }
+}
+```
+
+### AI Module
+
+Nested structure with providers, prompts, and agents:
+
+```json
+{
+  "ai": {
+    "providers": { ... },
+    "prompts": { ... },
+    "skills": "path/",
+    "agents": { ... }
+  }
+}
+```
+
+### Tools Module
+
+Contains configs and package lists:
+
+```json
+{
+  "tools": {
+    "configs": { ... },
+    "packages": {
+      "brew": [],
+      "npm": [],
+      "cargo": [],
+      "go": []
+    }
+  }
+}
+```
+
+### Fonts Module
+
+List of fonts to install (reference only):
+
+```json
+{
+  "fonts": {
+    "install": ["Font Name", "Another Font"]
+  }
+}
+```
+
+### Runtimes Module
+
+Runtime version preferences:
+
+```json
+{
+  "runtimes": {
+    "node": "20.10.0",
+    "python": "3.12.0",
+    "go": "1.22.0",
+    "manager": "asdf"
+  }
+}
+```
+
+## Path Expansion
+
+Pact expands these patterns in paths:
+
+| Pattern | Expansion |
+|---------|-----------|
+| `~` | Home directory |
+| `./` | Relative to `.pact/` |
+
+
+Always use forward slashes `/` in paths, even on Windows. Pact handles path conversion automatically.
+
+
+## Validation
+
+Pact validates your `pact.json` when loading. Common errors:
+
+- **Missing source**: The source file doesn't exist
+- **Invalid JSON**: Syntax error in the file
+- **Unknown module**: Module name not recognized (warning only)
+
+## Editing
+
+```bash
+# Edit in your default editor
+pact edit
+
+# Edit in web browser
+pact edit web
+```

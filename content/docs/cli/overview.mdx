@@ -1,0 +1,86 @@
+---
+title: CLI Overview
+description: Complete reference for all Pact CLI commands
+---
+# CLI Overview
+
+The Pact CLI is a Go-based command-line tool for managing your development environment configurations.
+
+## Command Summary
+
+| Command | Description |
+|---------|-------------|
+| `pact` | Interactive status with quick actions |
+| `pact init` | Authenticate with GitHub and setup pact repo |
+| `pact edit [path]` | Edit pact files locally or in web editor |
+| `pact sync [module]` | Pull and apply configurations |
+| `pact push` | Commit and push changes to GitHub |
+| `pact status` | Show status (non-interactive) |
+| `pact secret` | Manage secrets in OS keychain |
+| `pact reset` | Remove all symlinks (keeps .pact/) |
+| `pact nuke` | Full cleanup (symlinks + .pact/ + token) |
+
+## Interactive Mode
+
+Running `pact` without arguments launches an interactive TUI:
+
+```bash
+$ pact
+
+╭─ Pact Status ─────────────────────────────────────────╮
+│                                                        │
+│  ● Connected    Version: 1.0.0                        │
+│                                                        │
+│  Modules:                                              │
+│    ✓ shell        synced                              │
+│    ✓ editor       synced                              │
+│    ○ git          not configured                      │
+│                                                        │
+│  Press 's' to sync, 'e' to edit, 'q' to quit          │
+│                                                        │
+╰────────────────────────────────────────────────────────╯
+```
+
+**Key Bindings:**
+
+| Key | Action |
+|-----|--------|
+| `s` | Run `pact sync` |
+| `e` | Run `pact edit` |
+| `q` or `Ctrl+C` | Quit |
+
+## Getting Help
+
+Every command supports the `--help` flag:
+
+```bash
+pact --help
+pact init --help
+pact sync --help
+```
+
+## Environment Variables
+
+| Variable | Purpose | Default |
+|----------|---------|---------|
+| `GITHUB_CLIENT_ID` | OAuth app client ID | Built-in default |
+| `PACT_WEB_URL` | Web editor URL | `https://pact-ckn.pages.dev` |
+| `EDITOR` | Preferred text editor | varies |
+| `VISUAL` | Fallback text editor | varies |
+
+## Technical Details
+
+The CLI is built with:
+
+| Technology | Purpose |
+|------------|---------|
+| Go | Core language |
+| Cobra | Command-line parsing |
+| Bubbletea | TUI framework |
+| Lip Gloss | TUI styling |
+| go-git | Git operations |
+| go-keyring | OS keychain access |
+
+
+The CLI stores your GitHub token securely in your OS keychain, not in any configuration file.
+

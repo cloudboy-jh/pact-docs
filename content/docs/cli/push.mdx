@@ -1,0 +1,140 @@
+---
+title: pact push
+description: Commit and push changes to GitHub
+---
+# pact push
+
+Commit and push your local changes to GitHub.
+
+## Usage
+
+```bash
+pact push [flags]
+```
+
+## Flags
+
+| Flag | Type | Description |
+|------|------|-------------|
+| `-m, --message` | string | Commit message |
+| `--force` | bool | Force push (not implemented) |
+
+## Examples
+
+### Push with default message
+
+```bash
+pact push
+```
+
+Uses the default commit message: "Update pact configuration"
+
+### Push with custom message
+
+```bash
+pact push -m "Add nvim keybindings"
+pact push --message "Update shell aliases for new project"
+```
+
+## What it Does
+
+1. **Checks initialization**: Verifies pact is initialized
+2. **Gets token**: Retrieves your GitHub token from keychain
+3. **Checks for changes**: Uses `git status` to detect changes
+4. **Prompts for message**: If no `-m` flag, prompts for commit message
+5. **Commits**: Stages all changes and commits
+6. **Pushes**: Pushes to the remote `my-pact` repo
+
+## Example Output
+
+```bash
+$ pact push -m "Add lazygit config"
+
+Checking for changes...
+✓ Found 2 changed files
+
+Committing changes...
+✓ Committed: Add lazygit config
+
+Pushing to GitHub...
+✓ Pushed successfully
+```
+
+## No Changes
+
+If there are no changes to push:
+
+```bash
+$ pact push
+
+Checking for changes...
+✓ No changes to push
+```
+
+## Git Commit Author
+
+Pact uses your git configuration for the commit author:
+
+```bash
+# Set your git identity
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+```
+
+If git config is not set, Pact falls back to:
+- Name: `pact`
+- Email: `pact@users.noreply.github.com`
+
+## Workflow
+
+A typical workflow for making changes:
+
+```bash
+# Edit your configuration
+pact edit shell/zshrc
+
+# Make your changes...
+
+# Push to GitHub
+pact push -m "Add Docker aliases"
+
+# On another machine
+pact sync shell
+```
+
+
+Use descriptive commit messages so you can track what changed when reviewing your pact history on GitHub.
+
+
+## Pushing from Web Editor
+
+When using `pact edit web`, you can push changes directly from the browser without using the CLI.
+
+## Troubleshooting
+
+### "No changes to push"
+
+Make sure you've saved your files. Check `git status` in your `.pact/` directory:
+
+```bash
+cd .pact
+git status
+```
+
+### "Authentication failed"
+
+Your GitHub token may have expired. Re-authenticate:
+
+```bash
+pact nuke
+pact init
+```
+
+### "Remote rejected"
+
+Someone may have pushed changes from another machine. Pull first:
+
+```bash
+pact sync
+pact push -m "Your message"
+```

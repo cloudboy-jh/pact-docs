@@ -1,0 +1,93 @@
+---
+title: Installation
+description: Install the Pact CLI on macOS, Linux, or Windows
+---
+# Installation
+
+Pact CLI is available for macOS, Linux, and Windows.
+
+## Homebrew (Recommended)
+
+The easiest way to install Pact on macOS or Linux:
+
+```bash
+brew install cloudboy-jh/tap/pact
+```
+
+This installs the latest version and makes it available as `pact` in your terminal.
+
+## GitHub Releases
+
+Download the latest release from [GitHub Releases](https://github.com/cloudboy-jh/pact/releases).
+
+### macOS
+
+```bash
+# Download for Apple Silicon (M1/M2/M3)
+curl -sL https://github.com/cloudboy-jh/pact/releases/latest/download/pact_darwin_arm64.tar.gz | tar xz
+sudo mv pact /usr/local/bin/
+
+# Download for Intel
+curl -sL https://github.com/cloudboy-jh/pact/releases/latest/download/pact_darwin_amd64.tar.gz | tar xz
+sudo mv pact /usr/local/bin/
+```
+
+### Linux
+
+```bash
+# Download for x86_64
+curl -sL https://github.com/cloudboy-jh/pact/releases/latest/download/pact_linux_amd64.tar.gz | tar xz
+sudo mv pact /usr/local/bin/
+
+# Download for ARM64
+curl -sL https://github.com/cloudboy-jh/pact/releases/latest/download/pact_linux_arm64.tar.gz | tar xz
+sudo mv pact /usr/local/bin/
+```
+
+### Windows
+
+```powershell
+# Download the Windows release
+Invoke-WebRequest -Uri "https://github.com/cloudboy-jh/pact/releases/latest/download/pact_windows_amd64.zip" -OutFile "pact.zip"
+Expand-Archive -Path "pact.zip" -DestinationPath "C:\Program Files\pact"
+# Add to PATH via System Properties > Environment Variables
+```
+
+## Build from Source
+
+If you have Go 1.21+ installed:
+
+```bash
+git clone https://github.com/cloudboy-jh/pact.git
+cd pact/cli
+go build -o pact .
+sudo mv pact /usr/local/bin/
+```
+
+## Verify Installation
+
+```bash
+pact --help
+```
+
+You should see the Pact help output with available commands.
+
+## Prerequisites
+
+- **GitHub Account**: Pact uses GitHub to store your configurations
+- **Git**: Required for cloning and syncing your pact repo
+
+
+Pact stores your GitHub token securely in your OS keychain (Keychain on macOS, libsecret on Linux, Credential Manager on Windows).
+
+
+## Next Steps
+
+Once installed, run `pact init` to get started:
+
+```bash
+cd my-project
+pact init
+```
+
+See the [Quick Start](/docs/getting-started/quickstart) guide for a complete walkthrough.

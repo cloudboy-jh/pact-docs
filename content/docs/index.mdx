@@ -1,0 +1,78 @@
+---
+title: Introduction
+description: Your portable dev identity. Shell, editor, AI prefs, themes — one kit, any machine.
+---
+
+# Welcome to Pact
+
+**Pact** stores your entire development environment configuration in a single GitHub repo. Edit locally or in the browser, sync from terminal, apply anywhere.
+
+## The Problem
+
+Setting up a new machine sucks. Dotfiles repos are messy, unstructured, and hard to share. Your AI prompts, editor configs, and shell setup live in different places.
+
+## The Solution
+
+One `pact.json` manifest + organized files in a GitHub repo. CLI to edit and sync, web UI for visual editing, cross-OS support built in.
+
+## Quick Start
+
+### 1. Install the CLI
+
+```bash
+# macOS/Linux (Homebrew)
+brew install cloudboy-jh/tap/pact
+
+# Or download from GitHub Releases
+# https://github.com/cloudboy-jh/pact/releases
+```
+
+### 2. Initialize Pact
+
+```bash
+cd my-project
+pact init
+```
+
+This authenticates with GitHub, creates your `my-pact` repo, and clones it to `./.pact/`.
+
+### 3. Sync your configs
+
+```bash
+pact sync
+```
+
+Select which modules to sync or sync everything at once.
+
+## What's in a Pact
+
+```
+username/my-pact/
+├── pact.json              # Manifest
+├── shell/                 # .zshrc, .bashrc, profile.ps1
+├── editor/                # nvim, vscode, cursor configs
+├── terminal/              # Ghostty, Kitty, Alacritty
+├── git/                   # .gitconfig, .gitignore_global
+├── prompts/               # AI prompts (default.md, code-review.md)
+├── skills/                # Custom AI skills
+├── agents/                # CLAUDE.md, .cursorrules
+├── tools/                 # lazygit, ripgrep, fzf configs
+├── keybindings/           # Editor keybindings
+├── snippets/              # Code snippets
+├── fonts/                 # Font preferences
+└── theme/                 # Colors, wallpapers, icons
+```
+
+## Design Principles
+
+- **GitHub is the database** — No separate backend, your repo is the source of truth
+- **Edit anywhere** — Local editor or web UI, your choice
+- **Cross-OS by default** — Darwin, Windows, Linux configs coexist
+- **Secrets stay local** — API keys in OS keychain, never in repo
+
+## Next Steps
+
+- [Installation](/docs/getting-started/installation) — Install the Pact CLI
+- [Quick Start](/docs/getting-started/quickstart) — Get up and running in minutes
+- [CLI Reference](/docs/cli/overview) — Learn all CLI commands
+- [Configuration](/docs/configuration/pact-json) — Understand pact.json

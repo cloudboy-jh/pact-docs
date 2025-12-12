@@ -1,0 +1,189 @@
+---
+title: Modules Overview
+description: Understanding Pact modules and how they organize your configurations
+---
+
+# Modules Overview
+
+Modules are the building blocks of your Pact configuration. Each module represents a category of configuration files.
+
+## Available Modules
+
+- [Shell](/docs/modules/shell) — zsh, bash, PowerShell configurations
+- [Editor](/docs/modules/editor) — nvim, vscode, cursor configs
+- [Terminal](/docs/modules/terminal) — Ghostty, Kitty, Alacritty, iTerm2
+- [Git](/docs/modules/git) — .gitconfig, .gitignore_global
+- [AI](/docs/modules/ai) — Prompts, agents, providers
+- [Tools](/docs/modules/tools) — lazygit, ripgrep, fzf configs
+- [Theme](/docs/modules/theme) — Colors, wallpapers, icons
+
+## Module Structure
+
+Each module in `pact.json` follows this pattern:
+
+```json
+{
+  "modules": {
+    "module-name": {
+      "entry-name": {
+        "source": "./path/to/source",
+        "target": "~/path/to/target",
+        "strategy": "symlink"
+      }
+    }
+  }
+}
+```
+
+### Fields
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `source` | Yes | Path to the config file/directory in your pact repo |
+| `target` | Yes | Where to apply the config on your system |
+| `strategy` | No | `symlink` (default) or `copy` |
+
+## Module Types
+
+### Key-based Modules
+
+Most modules use keys to identify entries:
+
+```json
+{
+  "editor": {
+    "neovim": {
+      "source": "./editor/nvim/",
+      "target": "~/.config/nvim"
+    },
+    "vscode": {
+      "source": "./editor/vscode/settings.json",
+      "target": "~/.config/Code/User/settings.json"
+    }
+  }
+}
+```
+
+### OS-based Modules
+
+Some modules (like `shell`) use OS names as keys:
+
+```json
+{
+  "shell": {
+    "darwin": {
+      "source": "./shell/darwin.zshrc",
+      "target": "~/.zshrc"
+    },
+    "linux": {
+      "source": "./shell/linux.zshrc",
+      "target": "~/.zshrc"
+    },
+    "windows": {
+      "source": "./shell/windows.ps1",
+      "target": "~/Documents/PowerShell/profile.ps1"
+    }
+  }
+}
+```
+
+### Single-entry Modules
+
+Some modules (like `terminal`) have a single configuration:
+
+```json
+{
+  "terminal": {
+    "emulator": "ghostty",
+    "source": "./terminal/ghostty.conf",
+    "target": "~/.config/ghostty/config"
+  }
+}
+```
+
+## OS-Specific Targets
+
+Targets can be a string or an object with OS-specific paths:
+
+```json
+{
+  "editor": {
+    "neovim": {
+      "source": "./editor/nvim/",
+      "target": {
+        "darwin": "~/.config/nvim",
+        "linux": "~/.config/nvim",
+        "windows": "~/AppData/Local/nvim"
+      }
+    }
+  }
+}
+```
+
+Pact automatically detects your OS and uses the appropriate target path.
+
+## Syncing Modules
+
+Sync all modules:
+
+```bash
+pact sync
+# Select 'all' when prompted
+```
+
+Sync a specific module:
+
+```bash
+pact sync shell
+pact sync editor
+pact sync git
+```
+
+## Module File Structure
+
+Recommended file organization in your pact repo:
+
+```
+my-pact/
+├── pact.json
+├── shell/
+│   ├── darwin.zshrc
+│   ├── linux.zshrc
+│   └── windows.ps1
+├── editor/
+│   ├── nvim/
+│   │   ├── init.lua
+│   │   └── lua/
+│   └── vscode/
+│       └── settings.json
+├── terminal/
+│   └── ghostty.conf
+├── git/
+│   ├── .gitconfig
+│   └── .gitignore_global
+├── prompts/
+│   └── default.md
+├── agents/
+│   ├── CLAUDE.md
+│   └── .cursorrules
+└── theme/
+    ├── colors.json
+    └── wallpaper.png
+```
+
+## Custom Modules
+
+While Pact has built-in support for common modules, you can create custom entries:
+
+```json
+{
+  "tools": {
+    "configs": {
+      "custom-tool": {
+        "source": "./tools/custom-tool.yml",
+        "target": "~/.config/custom-tool/config.yml"
+      }
+    }
+  }
+}
+```

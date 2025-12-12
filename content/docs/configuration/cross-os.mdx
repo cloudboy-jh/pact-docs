@@ -1,0 +1,241 @@
+---
+title: Cross-OS Configuration
+description: Configure Pact to work across macOS, Linux, and Windows
+---
+# Cross-OS Configuration
+
+Pact is designed to work seamlessly across macOS, Linux, and Windows.
+
+## OS Detection
+
+Pact automatically detects your operating system:
+
+| OS | Key | Detection |
+|----|-----|-----------|
+| macOS | `darwin` | `runtime.GOOS == "darwin"` |
+| Linux | `linux` | `runtime.GOOS == "linux"` |
+| Windows | `windows` | `runtime.GOOS == "windows"` |
+
+## OS-Specific Entries
+
+Define different configurations per OS:
+
+```json
+{
+  "shell": {
+    "darwin": {
+      "source": "./shell/darwin.zshrc",
+      "target": "~/.zshrc"
+    },
+    "linux": {
+      "source": "./shell/linux.zshrc",
+      "target": "~/.zshrc"
+    },
+    "windows": {
+      "source": "./shell/windows.ps1",
+      "target": "~/Documents/PowerShell/profile.ps1"
+    }
+  }
+}
+```
+
+When you run `pact sync shell`:
+- On macOS: Only `darwin` entry is applied
+- On Linux: Only `linux` entry is applied
+- On Windows: Only `windows` entry is applied
+
+## OS-Specific Targets
+
+Same source, different target paths:
+
+```json
+{
+  "editor": {
+    "neovim": {
+      "source": "./editor/nvim/",
+      "target": {
+        "darwin": "~/.config/nvim",
+        "linux": "~/.config/nvim",
+        "windows": "~/AppData/Local/nvim"
+      }
+    }
+  }
+}
+```
+
+## Common Target Paths
+
+### Shell Configuration
+
+| OS | Shell | Config Path |
+|----|-------|-------------|
+| macOS | zsh | `~/.zshrc` |
+| Linux | zsh | `~/.zshrc` |
+| Linux | bash | `~/.bashrc` |
+| Windows | PowerShell | `~/Documents/PowerShell/profile.ps1` |
+
+### VS Code
+
+| OS | Settings Path |
+|----|---------------|
+| macOS | `~/Library/Application Support/Code/User/settings.json` |
+| Linux | `~/.config/Code/User/settings.json` |
+| Windows | `~/AppData/Roaming/Code/User/settings.json` |
+
+### Neovim
+
+| OS | Config Path |
+|----|-------------|
+| macOS | `~/.config/nvim` |
+| Linux | `~/.config/nvim` |
+| Windows | `~/AppData/Local/nvim` |
+
+### Git
+
+| OS | Config Path |
+|----|-------------|
+| All | `~/.gitconfig` |
+
+## Shared Configurations
+
+Some configurations work across all OSes:
+
+```json
+{
+  "git": {
+    "config": {
+      "source": "./git/.gitconfig",
+      "target": "~/.gitconfig"
+    }
+  }
+}
+```
+
+No OS-specific keys needed when the path is the same everywhere.
+
+## Partial OS Support
+
+You don't need entries for every OS:
+
+```json
+{
+  "shell": {
+    "darwin": {
+      "source": "./shell/darwin.zshrc",
+      "target": "~/.zshrc"
+    },
+    "linux": {
+      "source": "./shell/linux.zshrc",
+      "target": "~/.zshrc"
+    }
+    // No Windows entry - nothing synced on Windows
+  }
+}
+```
+
+
+If there's no entry for your current OS, that module is simply skipped during sync.
+
+
+## Strategy Per OS
+
+Different OSes may need different strategies:
+
+```json
+{
+  "shell": {
+    "darwin": {
+      "source": "./shell/darwin.zshrc",
+      "target": "~/.zshrc",
+      "strategy": "symlink"
+    },
+    "windows": {
+      "source": "./shell/windows.ps1",
+      "target": "~/Documents/PowerShell/profile.ps1",
+      "strategy": "copy"
+    }
+  }
+}
+```
+
+Windows PowerShell often works better with `copy` due to execution policy restrictions on symlinks.
+
+## File Structure
+
+Organize your pact repo by OS:
+
+```
+my-pact/
+├── shell/
+│   ├── darwin.zshrc
+│   ├── linux.zshrc
+│   ├── linux.bashrc
+│   └── windows.ps1
+├── editor/
+│   └── nvim/           # Same config, different targets
+├── terminal/
+│   ├── ghostty.conf    # macOS/Linux
+│   └── windows-terminal.json
+└── pact.json
+```
+
+## Shared Shell Code
+
+Keep OS-specific parts minimal by sharing common code:
+
+### common.sh
+
+```bash
+# Shared aliases and functions
+alias ll="ls -la"
+alias g="git"
+alias gs="git status"
+
+# Shared functions
+mkcd() {
+  mkdir -p "$1" && cd "$1"
+}
+```
+
+### darwin.zshrc
+
+```bash
+# Source shared config
+source ~/.pact/shell/common.sh
+
+# macOS-specific
+export HOMEBREW_PREFIX="/opt/homebrew"
+eval "$(/opt/homebrew/bin/brew shellenv)"
+```
+
+### linux.zshrc
+
+```bash
+# Source shared config
+source ~/.pact/shell/common.sh
+
+# Linux-specific
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+## Testing Cross-OS
+
+To verify your config works on all platforms:
+
+1. **Check syntax**: Ensure JSON is valid
+2. **Check paths**: Verify paths exist on target OS
+3. **Test sync**: Run `pact sync` on each OS
+
+```bash
+# On macOS
+pact sync shell
+cat ~/.zshrc
+
+# On Linux
+pact sync shell
+cat ~/.zshrc
+
+# On Windows
+pact sync shell
+Get-Content ~/Documents/PowerShell/profile.ps1
+```

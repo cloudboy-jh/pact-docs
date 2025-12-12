@@ -1,0 +1,176 @@
+---
+title: pact reset & nuke
+description: Remove symlinks and clean up Pact installation
+---
+# pact reset & nuke
+
+Commands for cleaning up your Pact installation.
+
+## pact reset
+
+Remove all symlinks created by Pact, but keep the `.pact/` directory.
+
+```bash
+pact reset
+```
+
+### What it Does
+
+1. Reads your `pact.json` configuration
+2. Finds all targets that were symlinked
+3. Removes the symlinks
+
+### When to Use
+
+- You want to temporarily disable Pact-managed configs
+- You're switching to a different configuration system
+- You need to test something with default configs
+
+### Example
+
+```bash
+$ pact reset
+
+Removing symlinks...
+  ✓ Removed ~/.zshrc
+  ✓ Removed ~/.config/nvim
+  ✓ Removed ~/.gitconfig
+
+3 symlinks removed
+```
+
+
+After reset, you can restore everything with `pact sync`.
+
+
+---
+## pact nuke
+
+Complete removal of Pact from your system.
+
+```bash
+pact nuke [flags]
+```
+
+### Flags
+
+| Flag | Type | Description |
+|------|------|-------------|
+| `-f, --force` | bool | Skip confirmation prompt |
+
+### What it Does
+
+1. Removes all symlinks (like `pact reset`)
+2. Deletes the `.pact/` directory
+3. Removes your GitHub token from keychain
+
+### Warning
+
+
+`pact nuke` is destructive! It removes:
+- All symlinked configs
+- Your local `.pact/` clone
+- Your GitHub token
+
+Your `my-pact` repo on GitHub is **not** affected.
+
+
+### Example
+
+```bash
+$ pact nuke
+
+⚠️  This will:
+  • Remove all symlinks
+  • Delete .pact/ directory
+  • Remove GitHub token from keychain
+
+Your my-pact repo on GitHub will NOT be deleted.
+
+Are you sure? (y/N): y
+
+Removing symlinks...
+  ✓ Removed ~/.zshrc
+  ✓ Removed ~/.config/nvim
+
+Deleting .pact/...
+  ✓ Removed .pact/
+
+Removing token from keychain...
+  ✓ Token removed
+
+✓ Pact removed from this machine
+```
+
+### Force mode
+
+Skip the confirmation:
+
+```bash
+pact nuke --force
+```
+
+or
+
+```bash
+pact nuke -f
+```
+
+## Recovery After Nuke
+
+If you accidentally ran `pact nuke`, recovery is easy:
+
+```bash
+# Re-initialize (will re-authenticate and clone your repo)
+pact init
+
+# Re-apply all configs
+pact sync
+```
+
+Your configurations are safe on GitHub — `nuke` only affects the local machine.
+
+## Comparison
+
+| Action | reset | nuke |
+|--------|-------|------|
+| Remove symlinks | ✓ | ✓ |
+| Delete .pact/ | ✗ | ✓ |
+| Remove token | ✗ | ✓ |
+| Recoverable with `pact sync` | ✓ | ✗ (need `pact init`) |
+
+## Use Cases
+
+### Testing default configs
+
+```bash
+pact reset
+# Test with system defaults
+pact sync  # Restore pact configs
+```
+
+### Moving to a new project
+
+```bash
+cd old-project
+pact reset
+cd ../new-project
+pact init
+pact sync
+```
+
+### Complete fresh start
+
+```bash
+pact nuke -f
+pact init
+pact sync
+```
+
+### Switching GitHub accounts
+
+```bash
+pact nuke
+# Log in with new GitHub account
+pact init
+```

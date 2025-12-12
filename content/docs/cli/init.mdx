@@ -1,0 +1,142 @@
+---
+title: pact init
+description: Initialize Pact and authenticate with GitHub
+---
+# pact init
+
+Authenticate with GitHub and set up your pact repository.
+
+## Usage
+
+```bash
+pact init [flags]
+```
+
+## Flags
+
+| Flag | Type | Description |
+|------|------|-------------|
+| `--from` | string | Fork pact from another user (not yet implemented) |
+
+## What it Does
+
+### 1. Check for existing pact
+
+Looks for `.pact/` in the current directory tree. Exits if already initialized.
+
+### 2. Authenticate with GitHub
+
+Checks for an existing token in your OS keychain. If none exists, starts the GitHub Device Flow:
+
+```txt
+Opening browser for GitHub authentication...
+Enter code: ABCD-1234 at https://github.com/login/device
+Waiting for authorization...
+```
+
+### 3. Verify/Create Repository
+
+Checks if `{username}/my-pact` repo exists on GitHub. If not, creates it automatically.
+
+### 4. Clone to Local
+
+Clones the repo to `./.pact/` in your current directory.
+
+### 5. Create Default Config
+
+If no `pact.json` exists, creates one with this template:
+
+```json
+{
+  "version": "1.0.0",
+  "user": "your-username",
+  "modules": {
+    "shell": {},
+    "editor": {},
+    "git": {},
+    "ai": {
+      "providers": {},
+      "prompts": {},
+      "agents": {}
+    },
+    "tools": {
+      "configs": {}
+    }
+  },
+  "secrets": []
+}
+```
+
+## Example
+
+```bash
+$ cd my-project
+$ pact init
+
+Opening browser for GitHub authentication...
+Enter code: ABCD-1234 at https://github.com/login/device
+
+Waiting for authorization...
+✓ Authenticated as cloudboy-jh
+
+Checking for existing pact repo...
+✓ Found cloudboy-jh/my-pact
+
+Cloning to ./.pact/...
+✓ Cloned successfully
+
+✓ Pact initialized!
+
+Run 'pact sync' to apply your configurations.
+```
+
+## On a New Machine
+
+When running `pact init` on a machine where you've already set up pact:
+
+```bash
+$ pact init
+
+Found existing token in keychain.
+✓ Authenticated as cloudboy-jh
+
+Cloning cloudboy-jh/my-pact to ./.pact/...
+✓ Cloned successfully
+
+✓ Pact initialized!
+```
+
+Your existing configurations are immediately available.
+
+## Token Storage
+
+The GitHub token is stored in your OS keychain:
+
+| OS | Storage |
+|----|---------|
+| macOS | Keychain |
+| Linux | libsecret / gnome-keyring |
+| Windows | Windows Credential Manager |
+
+
+The token is stored globally, so you only need to authenticate once per machine, regardless of how many projects use pact.
+
+
+## Troubleshooting
+
+### "pact already initialized"
+
+Pact found an existing `.pact/` directory. If you want to start fresh:
+
+```bash
+pact nuke
+pact init
+```
+
+### Authentication timeout
+
+The device flow code expires after 15 minutes. If it times out, just run `pact init` again.
+
+### Permission denied
+
+Make sure you have write access to the current directory and that the `my-pact` repo exists or you have permission to create it.

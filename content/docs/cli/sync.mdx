@@ -1,0 +1,161 @@
+---
+title: pact sync
+description: Pull latest changes and apply configurations
+---
+# pact sync
+
+Pull the latest changes from GitHub and apply configurations to your system.
+
+## Usage
+
+```bash
+pact sync [module]
+```
+
+## Arguments
+
+| Argument | Description |
+|----------|-------------|
+| (none) | Interactive mode — shows module picker |
+| `[module]` | Sync a specific module directly (e.g., `shell`, `editor`, `theme`) |
+
+## Interactive Mode
+
+Without arguments, `pact sync` shows an interactive module picker:
+
+```bash
+$ pact sync
+
+Pulling latest changes...
+✓ Pulled latest changes
+
+Found 6 modules in pact.json:
+
+  [1] shell        2 files
+  [2] editor       12 files (nvim, vscode)
+  [3] git          2 files
+  [4] ai           3 files (prompts, agents)
+  [5] tools        1 file
+  [6] theme        4 files (colors, wallpaper)
+
+Options:
+  Enter numbers separated by commas (e.g., 1,3,5)
+  'a' or 'all' to sync all modules
+  'q' or 'quit' to cancel
+
+Select modules: 1,2,6
+
+Syncing shell...
+Syncing editor...
+Syncing theme...
+  ✓ shell/darwin synced
+  ✓ editor/nvim synced
+  ✓ theme/colors synced
+
+3 synced, 0 failed, 0 skipped
+```
+
+## Direct Module Sync
+
+Sync a specific module without the interactive picker:
+
+```bash
+pact sync shell    # Syncs shell module
+pact sync editor   # Syncs editor module
+pact sync theme    # Syncs theme module
+```
+
+## What it Does
+
+1. **Checks initialization**: Verifies pact is initialized
+2. **Gets token**: Retrieves your GitHub token from keychain
+3. **Pulls changes**: Runs `git pull` to get latest from GitHub
+4. **Loads config**: Parses `pact.json`
+5. **Selects modules**: Shows picker or uses specified module
+6. **Applies configs**: Creates symlinks or copies files based on strategy
+7. **Reports results**: Shows success/failure counts
+
+## Sync Strategies
+
+| Strategy | Behavior | Use When |
+|----------|----------|----------|
+| `symlink` | Creates symlink from target to source | Edits in .pact/ reflect immediately |
+| `copy` | Copies file to target | App doesn't follow symlinks |
+
+## OS-Specific Behavior
+
+Pact automatically detects your OS and applies the correct configurations:
+
+```json
+{
+  "shell": {
+    "darwin": {
+      "source": "./shell/darwin.zshrc",
+      "target": "~/.zshrc"
+    },
+    "linux": {
+      "source": "./shell/linux.zshrc", 
+      "target": "~/.zshrc"
+    },
+    "windows": {
+      "source": "./shell/windows.ps1",
+      "target": "~/Documents/PowerShell/profile.ps1"
+    }
+  }
+}
+```
+
+Running `pact sync shell` on macOS only applies the `darwin` config.
+
+## Example Output
+
+```bash
+$ pact sync editor
+
+Pulling latest changes...
+✓ Pulled latest changes
+
+Syncing editor...
+  ✓ editor/nvim synced → ~/.config/nvim
+  ✓ editor/vscode synced → ~/.config/Code/User/settings.json
+  ✗ editor/cursor failed: source not found
+
+2 synced, 1 failed, 0 skipped
+```
+
+## Sync All Modules
+
+To sync everything at once:
+
+```bash
+$ pact sync
+Select modules: all
+```
+
+Or:
+```bash
+$ pact sync
+Select modules: a
+```
+
+
+Use the interactive mode to selectively sync only the modules you need. This is useful when you only want to update your shell config without touching other modules.
+
+
+## Troubleshooting
+
+### "pact not initialized"
+
+Run `pact init` first.
+
+### "source not found"
+
+The source file specified in `pact.json` doesn't exist in your `.pact/` directory. Add the file or remove the entry from your config.
+
+### "permission denied"
+
+Check that you have write access to the target directory. Some system directories may require sudo.
+
+### Existing file at target
+
+Pact removes existing files/directories at the target before creating symlinks. Make sure you've backed up any important files before syncing.

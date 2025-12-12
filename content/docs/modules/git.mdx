@@ -1,0 +1,265 @@
+---
+title: Git Module
+description: Manage global Git configuration and ignore patterns
+---
+# Git Module
+
+The git module manages your global Git configuration files.
+
+## Configuration
+
+```json
+{
+  "modules": {
+    "git": {
+      "config": {
+        "source": "./git/.gitconfig",
+        "target": "~/.gitconfig",
+        "strategy": "symlink"
+      },
+      "ignore": {
+        "source": "./git/.gitignore_global",
+        "target": "~/.gitignore_global",
+        "strategy": "symlink"
+      }
+    }
+  }
+}
+```
+
+## File Structure
+
+```
+my-pact/
+├── git/
+│   ├── .gitconfig
+│   └── .gitignore_global
+└── pact.json
+```
+
+## .gitconfig
+
+Your global Git configuration:
+
+```ini
+[user]
+    name = Your Name
+    email = you@example.com
+
+[core]
+    editor = nvim
+    excludesfile = ~/.gitignore_global
+    autocrlf = input
+    pager = delta
+
+[init]
+    defaultBranch = main
+
+[pull]
+    rebase = true
+
+[push]
+    autoSetupRemote = true
+
+[alias]
+    co = checkout
+    br = branch
+    ci = commit
+    st = status
+    unstage = reset HEAD --
+    last = log -1 HEAD
+    lg = log --oneline --graph --decorate
+    amend = commit --amend --no-edit
+
+[diff]
+    colorMoved = default
+
+[merge]
+    conflictstyle = diff3
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true
+    light = false
+    line-numbers = true
+```
+
+## .gitignore_global
+
+Patterns to ignore in all repositories:
+
+```txt
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editor directories
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+vendor/
+__pycache__/
+*.pyc
+
+# Build outputs
+dist/
+build/
+*.o
+*.a
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Pact (optional)
+.pact/
+```
+
+
+The `excludesfile` in `.gitconfig` should point to your `.gitignore_global` location. Make sure to update this if your target path differs.
+
+
+## Delta Integration
+
+[Delta](https://github.com/dandavison/delta) is a syntax-highlighting pager for git. Install it and configure in `.gitconfig`:
+
+```ini
+[core]
+    pager = delta
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true
+    light = false
+    line-numbers = true
+    side-by-side = true
+```
+
+## Multiple Git Identities
+
+If you use different Git identities for work and personal projects:
+
+```ini
+[includeIf "gitdir:~/work/"]
+    path = ~/.gitconfig-work
+
+[includeIf "gitdir:~/personal/"]
+    path = ~/.gitconfig-personal
+```
+
+Add these additional configs to your pact:
+
+```json
+{
+  "git": {
+    "config": {
+      "source": "./git/.gitconfig",
+      "target": "~/.gitconfig"
+    },
+    "config-work": {
+      "source": "./git/.gitconfig-work",
+      "target": "~/.gitconfig-work"
+    },
+    "config-personal": {
+      "source": "./git/.gitconfig-personal",
+      "target": "~/.gitconfig-personal"
+    }
+  }
+}
+```
+
+## GPG Signing
+
+For commit signing:
+
+```ini
+[user]
+    signingkey = YOUR_GPG_KEY_ID
+
+[commit]
+    gpgsign = true
+
+[gpg]
+    program = gpg
+```
+
+
+Never store GPG private keys in your pact repo. Only reference the key ID.
+
+
+## Syncing
+
+```bash
+pact sync git
+```
+
+After syncing, verify your config:
+
+```bash
+git config --global --list
+```
+
+## Common Aliases
+
+Useful Git aliases to include:
+
+```ini
+[alias]
+    # Status
+    s = status -sb
+    
+    # Commit
+    c = commit
+    ca = commit -a
+    cm = commit -m
+    cam = commit -am
+    amend = commit --amend --no-edit
+    
+    # Branch
+    b = branch
+    bd = branch -d
+    bD = branch -D
+    
+    # Checkout
+    co = checkout
+    cob = checkout -b
+    
+    # Diff
+    d = diff
+    ds = diff --staged
+    
+    # Log
+    l = log --oneline -10
+    lg = log --oneline --graph --decorate --all
+    
+    # Push/Pull
+    p = push
+    pf = push --force-with-lease
+    pl = pull --rebase
+    
+    # Stash
+    ss = stash
+    sp = stash pop
+    sl = stash list
+    
+    # Reset
+    unstage = reset HEAD --
+    undo = reset --soft HEAD~1
+```

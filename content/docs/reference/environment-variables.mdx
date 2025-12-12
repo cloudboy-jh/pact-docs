@@ -1,0 +1,35 @@
+---
+title: Environment Variables
+description: All environment variables used by Pact
+---
+# Environment Variables
+
+Reference for all environment variables used by Pact.
+
+## CLI Environment Variables
+
+### EDITOR
+
+Your preferred text editor for `pact edit`.
+
+```bash
+export EDITOR="nvim"
+```
+
+### VISUAL
+
+Fallback editor if `EDITOR` is not set.
+
+### PACT_WEB_URL
+
+Override the web editor URL.
+
+```bash
+export PACT_WEB_URL="http://localhost:5173"
+```
+
+**Default:** `https://pact-ckn.pages.dev`
+
+### GITHUB_CLIENT_ID
+
+Override the OAuth client ID (for development).

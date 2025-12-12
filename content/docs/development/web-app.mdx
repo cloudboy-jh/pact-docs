@@ -1,0 +1,39 @@
+---
+title: Web App
+description: Technical details about the Pact web application
+---
+# Web App
+
+The Pact web app provides a browser-based interface for editing configurations.
+
+## Tech Stack
+
+| Technology | Purpose |
+|------------|---------|
+| SvelteKit | Framework |
+| Tailwind CSS | Styling |
+| CodeMirror 6 | Code editor |
+| Lucide Svelte | Icons |
+| Cloudflare Pages | Deployment |
+
+## Routes
+
+| Route | Purpose |
+|-------|---------|
+| `/` | Landing page |
+| `/auth` | Redirects to GitHub OAuth |
+| `/auth/callback` | Handles OAuth callback |
+| `/dashboard` | Main dashboard |
+| `/editor` | File editor |
+
+## Local Development
+
+```bash
+cd web
+npm install
+npm run dev
+```
+
+## Deployment
+
+The web app is deployed to Cloudflare Pages at `https://pact-ckn.pages.dev`

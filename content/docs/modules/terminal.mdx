@@ -1,0 +1,204 @@
+---
+title: Terminal Module
+description: Configure terminal emulators like Ghostty, Kitty, Alacritty, and more
+---
+# Terminal Module
+
+The terminal module manages terminal emulator configurations.
+
+## Configuration
+
+```json
+{
+  "modules": {
+    "terminal": {
+      "emulator": "ghostty",
+      "source": "./terminal/ghostty.conf",
+      "target": "~/.config/ghostty/config",
+      "strategy": "symlink"
+    }
+  }
+}
+```
+
+The `emulator` field is informational — it helps you remember which terminal this config is for.
+
+## Supported Terminals
+
+### Ghostty
+
+```json
+{
+  "terminal": {
+    "emulator": "ghostty",
+    "source": "./terminal/ghostty.conf",
+    "target": {
+      "darwin": "~/.config/ghostty/config",
+      "linux": "~/.config/ghostty/config"
+    }
+  }
+}
+```
+
+Example `ghostty.conf`:
+
+```
+# Font
+font-family = JetBrains Mono
+font-size = 14
+
+# Colors (Catppuccin Mocha)
+background = 1e1e2e
+foreground = cdd6f4
+
+# Window
+window-padding-x = 10
+window-padding-y = 10
+
+# Cursor
+cursor-style = block
+cursor-style-blink = false
+
+# Shell
+shell-integration = zsh
+```
+
+### Kitty
+
+```json
+{
+  "terminal": {
+    "emulator": "kitty",
+    "source": "./terminal/kitty.conf",
+    "target": "~/.config/kitty/kitty.conf"
+  }
+}
+```
+
+Example `kitty.conf`:
+
+```
+# Font
+font_family JetBrains Mono
+font_size 14.0
+
+# Colors
+background #1e1e2e
+foreground #cdd6f4
+
+# Window
+window_padding_width 10
+hide_window_decorations yes
+
+# Cursor
+cursor_shape block
+cursor_blink_interval 0
+```
+
+### Alacritty
+
+```json
+{
+  "terminal": {
+    "emulator": "alacritty",
+    "source": "./terminal/alacritty.toml",
+    "target": {
+      "darwin": "~/.config/alacritty/alacritty.toml",
+      "linux": "~/.config/alacritty/alacritty.toml",
+      "windows": "~/AppData/Roaming/alacritty/alacritty.toml"
+    }
+  }
+}
+```
+
+Example `alacritty.toml`:
+
+```toml
+[font]
+normal = { family = "JetBrains Mono", style = "Regular" }
+size = 14.0
+
+[colors.primary]
+background = "#1e1e2e"
+foreground = "#cdd6f4"
+
+[window]
+padding = { x = 10, y = 10 }
+decorations = "None"
+```
+
+### iTerm2 (macOS)
+
+iTerm2 uses a preferences plist that's harder to sync. Consider using iTerm2's built-in "Load preferences from a custom folder" feature pointing to your `.pact/` directory.
+
+### Windows Terminal
+
+```json
+{
+  "terminal": {
+    "emulator": "windows-terminal",
+    "source": "./terminal/windows-terminal.json",
+    "target": "~/AppData/Local/Packages/Microsoft.WindowsTerminal_8wekyb3d8bbwe/LocalState/settings.json"
+  }
+}
+```
+
+## File Structure
+
+```
+my-pact/
+├── terminal/
+│   ├── ghostty.conf
+│   ├── kitty.conf
+│   ├── alacritty.toml
+│   └── windows-terminal.json
+└── pact.json
+```
+
+## Multiple Terminals
+
+If you use different terminals on different systems:
+
+```json
+{
+  "terminal": {
+    "emulator": "ghostty",
+    "source": {
+      "darwin": "./terminal/ghostty.conf",
+      "linux": "./terminal/kitty.conf",
+      "windows": "./terminal/windows-terminal.json"
+    },
+    "target": {
+      "darwin": "~/.config/ghostty/config",
+      "linux": "~/.config/kitty/kitty.conf",
+      "windows": "~/AppData/Local/Packages/Microsoft.WindowsTerminal_8wekyb3d8bbwe/LocalState/settings.json"
+    }
+  }
+}
+```
+
+## Syncing
+
+```bash
+pact sync terminal
+```
+
+
+After syncing your terminal config, you may need to restart your terminal for changes to take effect.
+
+
+## Font Setup
+
+Most terminal configs reference fonts. Make sure your fonts are installed:
+
+```json
+{
+  "fonts": {
+    "install": ["JetBrains Mono", "Fira Code", "Hack Nerd Font"]
+  }
+}
+```
+
+
+The `fonts` module is a reminder — Pact doesn't automatically install fonts. Use Homebrew, your system package manager, or download manually.
+

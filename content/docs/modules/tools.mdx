@@ -1,0 +1,215 @@
+---
+title: Tools Module
+description: Configure CLI tools like lazygit, ripgrep, fzf, and more
+---
+# Tools Module
+
+The tools module manages configurations for CLI tools and optionally tracks packages to install.
+
+## Configuration
+
+```json
+{
+  "modules": {
+    "tools": {
+      "configs": {
+        "lazygit": {
+          "source": "./tools/lazygit.yml",
+          "target": {
+            "darwin": "~/Library/Application Support/lazygit/config.yml",
+            "linux": "~/.config/lazygit/config.yml",
+            "windows": "~/AppData/Local/lazygit/config.yml"
+          }
+        },
+        "bat": {
+          "source": "./tools/bat.conf",
+          "target": "~/.config/bat/config"
+        },
+        "starship": {
+          "source": "./tools/starship.toml",
+          "target": "~/.config/starship.toml"
+        }
+      },
+      "packages": {
+        "brew": ["ripgrep", "fzf", "bat", "eza", "lazygit", "starship"],
+        "npm": ["typescript", "eslint", "prettier"],
+        "cargo": ["exa", "fd-find"],
+        "go": ["github.com/jesseduffield/lazygit@latest"]
+      }
+    }
+  }
+}
+```
+
+## File Structure
+
+```
+my-pact/
+├── tools/
+│   ├── lazygit.yml
+│   ├── bat.conf
+│   ├── starship.toml
+│   └── ripgrep.conf
+└── pact.json
+```
+
+## Tool Configurations
+
+### Lazygit
+
+```yaml
+# lazygit.yml
+gui:
+  theme:
+    selectedLineBgColor:
+      - default
+    selectedRangeBgColor:
+      - default
+  showCommandLog: false
+  showRandomTip: false
+  
+git:
+  paging:
+    colorArg: always
+    pager: delta --dark --paging=never
+  
+keybinding:
+  universal:
+    quit: 'q'
+    quit-alt1: '<c-c>'
+```
+
+### Starship
+
+```toml
+# starship.toml
+format = """
+$directory\
+$git_branch\
+$git_status\
+$character
+"""
+
+[directory]
+truncation_length = 3
+truncate_to_repo = true
+
+[git_branch]
+symbol = " "
+format = "[$symbol$branch]($style) "
+
+[git_status]
+format = '([$all_status$ahead_behind]($style) )'
+
+[character]
+success_symbol = "[➜](bold green)"
+error_symbol = "[➜](bold red)"
+```
+
+### Bat
+
+```txt
+# bat.conf
+--theme="Catppuccin-mocha"
+--style="numbers,changes,header"
+--italic-text=always
+```
+
+### Ripgrep
+
+```txt
+# ripgrep.conf (.ripgreprc)
+--smart-case
+--hidden
+--glob=!.git/*
+--glob=!node_modules/*
+--glob=!vendor/*
+```
+
+Set `RIPGREP_CONFIG_PATH`:
+
+```bash
+export RIPGREP_CONFIG_PATH=~/.config/ripgrep/config
+```
+
+## Package Lists
+
+The `packages` field is a reference for what to install — Pact doesn't automatically install packages.
+
+```json
+{
+  "packages": {
+    "brew": ["ripgrep", "fzf", "bat", "eza", "lazygit"],
+    "npm": ["typescript", "eslint", "@antfu/ni"],
+    "cargo": ["tokei", "hyperfine"],
+    "go": ["github.com/charmbracelet/gum@latest"]
+  }
+}
+```
+
+Use these lists to quickly set up a new machine:
+
+```bash
+# Install brew packages
+brew install $(jq -r '.modules.tools.packages.brew | join(" ")' .pact/pact.json)
+
+# Install npm packages globally
+npm install -g $(jq -r '.modules.tools.packages.npm | join(" ")' .pact/pact.json)
+```
+
+## Common Tools
+
+### fzf
+
+fzf configuration is usually in your shell config:
+
+```bash
+# In .zshrc
+export FZF_DEFAULT_OPTS='
+  --height 40%
+  --layout=reverse
+  --border
+  --color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8
+  --color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc
+  --color=marker:#f5e0dc,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8
+'
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+```
+
+### eza (modern ls)
+
+```bash
+# In .zshrc
+alias ls="eza --icons"
+alias ll="eza -la --icons"
+alias lt="eza --tree --level=2 --icons"
+```
+
+### zoxide (smart cd)
+
+```bash
+# In .zshrc
+eval "$(zoxide init zsh)"
+alias cd="z"
+```
+
+## Syncing
+
+```bash
+pact sync tools
+```
+
+
+Some tools require environment variables to find their config. Make sure to set these in your shell config.
+
+
+## Target Paths
+
+Common config paths by tool and OS:
+
+| Tool | macOS | Linux |
+|------|-------|-------|
+| lazygit | `~/Library/Application Support/lazygit/config.yml` | `~/.config/lazygit/config.yml` |
+| bat | `~/.config/bat/config` | `~/.config/bat/config` |
+| starship | `~/.config/starship.toml` | `~/.config/starship.toml` |
+| ripgrep | `~/.config/ripgrep/config` | `~/.config/ripgrep/config` |

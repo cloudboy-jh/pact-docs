@@ -1,0 +1,171 @@
+---
+title: pact edit
+description: Edit pact files locally or in the web editor
+---
+# pact edit
+
+Edit your pact configuration files locally or open the web editor.
+
+## Usage
+
+```bash
+pact edit [path]
+```
+
+## Arguments
+
+| Argument | Description |
+|----------|-------------|
+| (none) | Opens `pact.json` in your `$EDITOR` |
+| `web` | Opens the web editor in your browser |
+| `<path>` | Opens the specified path relative to `.pact/` |
+
+## Examples
+
+### Edit pact.json
+
+```bash
+pact edit
+```
+
+Opens `.pact/pact.json` in your default editor.
+
+### Edit a specific file
+
+```bash
+pact edit shell/zshrc        # Edit shell config
+pact edit editor/nvim/init.lua  # Edit nvim config
+pact edit prompts/default.md    # Edit AI prompt
+```
+
+### Open web editor
+
+```bash
+pact edit web
+```
+
+Opens the Pact web editor in your browser, where you can:
+- Browse all your config files
+- Edit with syntax highlighting
+- Visual JSON editing for `pact.json`
+- Push changes directly to GitHub
+
+## Editor Selection
+
+Pact selects an editor in this order:
+
+1. `$EDITOR` environment variable
+2. `$VISUAL` environment variable
+3. `vim` (if available)
+4. `nano` (if available)
+5. `vi` (fallback)
+
+### Set your preferred editor
+
+```bash
+# In your shell config (.zshrc, .bashrc, etc.)
+export EDITOR="code --wait"   # VS Code
+export EDITOR="nvim"          # Neovim
+export EDITOR="cursor --wait" # Cursor
+export EDITOR="nano"          # Nano
+```
+
+
+For VS Code or Cursor, use the `--wait` flag so pact knows when you're done editing.
+
+
+## Web Editor
+
+The web editor provides:
+
+- **File browser**: Navigate your entire pact repo
+- **Syntax highlighting**: JSON, YAML, Markdown, and more
+- **Live validation**: Catch JSON errors before saving
+- **Section navigation**: Jump to specific modules in pact.json
+- **One-click push**: Commit and push without leaving the browser
+- **AI integration**: Open configs in Claude, ChatGPT, or other AI assistants
+
+### Environment Variable
+
+You can change the web editor URL:
+
+```bash
+export PACT_WEB_URL="https://your-custom-pact-web.com"
+```
+
+Default: `https://pact-ckn.pages.dev`
+
+## Workflow: Local Editing
+
+```bash
+# Edit your shell config
+pact edit shell/zshrc
+
+# Make your changes in the editor...
+
+# Push changes to GitHub
+pact push -m "Update shell aliases"
+
+# On another machine, pull the changes
+pact sync shell
+```
+
+## Workflow: Web Editing
+
+```bash
+# Open web editor
+pact edit web
+
+# Make changes in the browser...
+# Click "Push to GitHub"
+
+# On your machine, sync the changes
+pact sync
+```
+
+## Creating New Files
+
+To create a new file, you can either:
+
+1. **Create manually**: Add the file to `.pact/` then update `pact.json`
+2. **Web editor**: Use the web interface to create new files
+
+```bash
+# Create a new prompt file
+touch .pact/prompts/code-review.md
+pact edit prompts/code-review.md
+
+# Update pact.json to reference it
+pact edit
+```
+
+## Troubleshooting
+
+### "EDITOR not set"
+
+Set the `EDITOR` environment variable in your shell config:
+
+```bash
+export EDITOR="nvim"
+```
+
+### Web editor doesn't open
+
+Make sure you have a default browser configured. On Linux, you may need to set `$BROWSER`:
+
+```bash
+export BROWSER="firefox"
+```
+
+### File not found
+
+Make sure the path is relative to `.pact/`:
+
+```bash
+# Correct
+pact edit shell/zshrc
+
+# Incorrect
+pact edit .pact/shell/zshrc
+pact edit ~/.pact/shell/zshrc
+```

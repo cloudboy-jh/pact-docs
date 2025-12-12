@@ -1,0 +1,189 @@
+---
+title: Shell Module
+description: Configure shell environments across operating systems
+---
+# Shell Module
+
+The shell module manages your shell configuration files across different operating systems.
+
+## Configuration
+
+```json
+{
+  "modules": {
+    "shell": {
+      "darwin": {
+        "source": "./shell/darwin.zshrc",
+        "target": "~/.zshrc",
+        "strategy": "symlink"
+      },
+      "linux": {
+        "source": "./shell/linux.zshrc",
+        "target": "~/.zshrc",
+        "strategy": "symlink"
+      },
+      "windows": {
+        "source": "./shell/windows.ps1",
+        "target": "~/Documents/PowerShell/profile.ps1",
+        "strategy": "copy"
+      }
+    }
+  }
+}
+```
+
+## OS Detection
+
+Pact automatically detects your operating system:
+
+| OS | Key | Common Shell |
+|----|-----|--------------|
+| macOS | `darwin` | zsh |
+| Linux | `linux` | bash/zsh |
+| Windows | `windows` | PowerShell |
+
+When you run `pact sync shell`, only the config for your current OS is applied.
+
+## File Structure
+
+```txt
+my-pact/
+├── shell/
+│   ├── darwin.zshrc      # macOS zsh config
+│   ├── linux.zshrc       # Linux zsh config
+│   ├── linux.bashrc      # Linux bash config (alternative)
+│   └── windows.ps1       # Windows PowerShell profile
+└── pact.json
+```
+
+## Example: zsh (macOS/Linux)
+
+```bash
+# darwin.zshrc / linux.zshrc
+
+# Path
+export PATH="$HOME/.local/bin:$PATH"
+
+# Aliases
+alias ll="ls -la"
+alias g="git"
+alias gs="git status"
+alias gc="git commit"
+alias gp="git push"
+
+# Editor
+export EDITOR="nvim"
+export VISUAL="nvim"
+
+# Pact
+alias p="pact"
+alias ps="pact sync"
+alias pe="pact edit"
+
+# Prompt (simple)
+PROMPT='%F{green}%n%f@%F{blue}%m%f:%F{yellow}%~%f$ '
+
+# History
+HISTSIZE=10000
+SAVEHIST=10000
+setopt SHARE_HISTORY
+
+# Completions
+autoload -Uz compinit && compinit
+```
+
+## Example: PowerShell (Windows)
+
+```powershell
+# windows.ps1
+
+# Aliases
+Set-Alias -Name g -Value git
+Set-Alias -Name ll -Value Get-ChildItem
+
+# Functions
+function gs { git status }
+function gc { git commit @args }
+function gp { git push @args }
+
+# Prompt
+function Prompt {
+    $path = (Get-Location).Path.Replace($HOME, "~")
+    Write-Host "$env:USERNAME@$env:COMPUTERNAME" -ForegroundColor Green -NoNewline
+    Write-Host ":" -NoNewline
+    Write-Host $path -ForegroundColor Yellow -NoNewline
+    return "$ "
+}
+
+# PSReadLine settings
+Set-PSReadLineOption -PredictionSource History
+Set-PSReadLineKeyHandler -Key Tab -Function Complete
+```
+
+## Shared Configuration
+
+If you want to share most of your config across OSes, create a common file:
+
+```txt
+shell/
+├── common.sh           # Shared aliases and functions
+├── darwin.zshrc        # Sources common.sh + macOS-specific
+└── linux.zshrc         # Sources common.sh + Linux-specific
+```
+
+```bash
+# darwin.zshrc
+source ~/.pact/shell/common.sh
+
+# macOS-specific
+export HOMEBREW_PREFIX="/opt/homebrew"
+eval "$(/opt/homebrew/bin/brew shellenv)"
+```
+
+## Strategy: Symlink vs Copy
+
+
+Use `symlink` for most shell configs — changes in `.pact/` are immediately available in your shell.
+
+
+Use `copy` on Windows PowerShell if you encounter execution policy issues with symlinks.
+
+## Multiple Shell Configs
+
+You can have multiple shell configurations:
+
+```json
+{
+  "shell": {
+    "darwin": {
+      "source": "./shell/darwin.zshrc",
+      "target": "~/.zshrc"
+    },
+    "darwin-bashrc": {
+      "source": "./shell/darwin.bashrc",
+      "target": "~/.bashrc"
+    },
+    "darwin-profile": {
+      "source": "./shell/darwin.profile",
+      "target": "~/.profile"
+    }
+  }
+}
+```
+
+## Syncing
+
+```bash
+# Sync only shell configuration
+pact sync shell
+
+# Interactive sync (select shell from list)
+pact sync
+```
+
+## Tips
+
+1. **Backup first**: Before your first sync, backup your existing shell config
+2. **Source order**: Understand your shell's sourcing order (.zprofile, .zshrc, etc.)
+3. **Test changes**: After editing, source the file to test: `source ~/.zshrc`
+4. **Use aliases**: Create aliases for common pact commands in your shell config

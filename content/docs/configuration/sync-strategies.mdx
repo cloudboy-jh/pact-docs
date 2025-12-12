@@ -1,0 +1,188 @@
+---
+title: Sync Strategies
+description: Understanding symlink vs copy strategies for config syncing
+---
+# Sync Strategies
+
+Pact supports two strategies for applying configurations to your system.
+
+## Symlink (Default)
+
+Creates a symbolic link from the target location to the source file in your `.pact/` directory.
+
+```json
+{
+  "source": "./shell/zshrc",
+  "target": "~/.zshrc",
+  "strategy": "symlink"
+}
+```
+
+### How It Works
+
+```
+~/.zshrc → ~/.pact/shell/zshrc
+```
+
+The target (`~/.zshrc`) is a symlink pointing to the actual file in your pact repo.
+
+### Advantages
+
+1. **Instant updates**: Changes in `.pact/` are immediately reflected
+2. **Easy tracking**: `git status` in `.pact/` shows all changes
+3. **Bidirectional**: Edit either location, changes appear in both
+4. **Space efficient**: Only one copy of the file exists
+
+### When to Use
+
+- Most configuration files
+- When you want changes to be immediately available
+- When the application follows symlinks
+
+### Example
+
+```bash
+$ ls -la ~/.zshrc
+lrwxr-xr-x  1 user  staff  25 Dec 10 10:00 .zshrc -> .pact/shell/darwin.zshrc
+```
+
+## Copy
+
+Copies the file from your `.pact/` directory to the target location.
+
+```json
+{
+  "source": "./shell/zshrc",
+  "target": "~/.zshrc",
+  "strategy": "copy"
+}
+```
+
+### How It Works
+
+```
+~/.pact/shell/zshrc → (copied to) → ~/.zshrc
+```
+
+The target is a separate file with the same contents as the source.
+
+### Advantages
+
+1. **Application compatibility**: Works with apps that don't follow symlinks
+2. **Independence**: Target can be modified without affecting source
+3. **Permissions**: Target can have different permissions than source
+
+### When to Use
+
+- Windows PowerShell profiles (execution policy issues)
+- Applications that don't follow symlinks
+- When you need the target to be a real file
+
+### Disadvantages
+
+1. **Manual re-sync**: Changes require running `pact sync` again
+2. **Two copies**: Source and target are separate files
+3. **Drift risk**: Target can diverge from source
+
+
+When using `copy` strategy, remember to run `pact sync` after editing files in `.pact/` to update the target.
+
+
+## Choosing a Strategy
+
+| Scenario | Recommended Strategy |
+|----------|---------------------|
+| Shell configs (macOS/Linux) | `symlink` |
+| PowerShell profile (Windows) | `copy` |
+| Neovim config | `symlink` |
+| VS Code settings | `symlink` |
+| Applications with symlink issues | `copy` |
+| Frequently edited configs | `symlink` |
+
+## Default Strategy
+
+If no strategy is specified, Pact uses `symlink`:
+
+```json
+{
+  "source": "./shell/zshrc",
+  "target": "~/.zshrc"
+  // strategy defaults to "symlink"
+}
+```
+
+## Directory Syncing
+
+Both strategies work with directories:
+
+### Symlink (Directory)
+
+```json
+{
+  "source": "./editor/nvim/",
+  "target": "~/.config/nvim",
+  "strategy": "symlink"
+}
+```
+
+Creates a symlink to the entire directory.
+
+### Copy (Directory)
+
+```json
+{
+  "source": "./editor/nvim/",
+  "target": "~/.config/nvim",
+  "strategy": "copy"
+}
+```
+
+Recursively copies all files and subdirectories.
+
+## Mixed Strategies
+
+You can use different strategies for different modules:
+
+```json
+{
+  "modules": {
+    "shell": {
+      "darwin": {
+        "source": "./shell/darwin.zshrc",
+        "target": "~/.zshrc",
+        "strategy": "symlink"
+      },
+      "windows": {
+        "source": "./shell/windows.ps1",
+        "target": "~/Documents/PowerShell/profile.ps1",
+        "strategy": "copy"
+      }
+    }
+  }
+}
+```
+
+## Troubleshooting
+
+### Symlink not working
+
+1. **Check permissions**: You need write access to the target directory
+2. **Check if target exists**: Pact removes existing files before creating symlinks
+3. **Check application support**: Some apps don't follow symlinks
+
+### Copy not updating
+
+1. **Run sync again**: `pact sync <module>`
+2. **Check for conflicts**: Target may have been modified
+
+### File permissions
+
+Symlinks preserve the source file's permissions. Copies inherit permissions from the copy operation.
+
+```bash
+# Check symlink target
+ls -la ~/.zshrc
+
+# Check actual permissions
+ls -la ~/.pact/shell/darwin.zshrc
+```
