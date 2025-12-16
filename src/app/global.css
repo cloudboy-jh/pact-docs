@@ -65,6 +65,12 @@
   }
 }
 
+/* Override Fumadocs dark mode primary color with emerald */
+.dark {
+  --color-fd-primary: hsl(160, 84%, 39%);
+  --color-fd-primary-foreground: hsl(0, 0%, 3.9%);
+}
+
 /* Custom scrollbar for dark mode */
 .dark ::-webkit-scrollbar {
   width: 8px;
