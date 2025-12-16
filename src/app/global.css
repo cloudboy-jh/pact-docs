@@ -27,6 +27,10 @@
     --ring: 160 84% 39%;
     --radius: 0.75rem;
     font-feature-settings: "rlig" 1, "calt" 1;
+    
+    /* Fumadocs sidebar active color - emerald */
+    --color-fd-primary: hsl(160, 84%, 39%);
+    --color-fd-primary-foreground: hsl(0, 0%, 98%);
   }
 
   .dark {
