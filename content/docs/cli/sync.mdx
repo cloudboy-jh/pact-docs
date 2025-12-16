@@ -13,10 +13,11 @@ pact sync [module]
 
 ## Arguments
 
-| Argument | Description |
-|----------|-------------|
-| (none) | Interactive mode — shows module picker |
-| `[module]` | Sync a specific module directly (e.g., `shell`, `editor`, `theme`) |
+| Command | Description |
+|---------|-------------|
+| `pact sync` | Interactive module picker - select which modules to apply |
+| `pact sync all` | Apply everything |
+| `pact sync <module>` | Apply specific module (shell, cli, git, editor, terminal, llm, apps) |
 
 ## Interactive Mode
 
@@ -64,6 +65,20 @@ pact sync editor   # Syncs editor module
 pact sync theme    # Syncs theme module
 ```
 
+## Full Apply System (v0.2.0)
+
+`pact sync` does more than symlink files — it actively installs tools and configures your system:
+
+| Module | What Gets Installed/Configured |
+|--------|-------------------------------|
+| `shell` | oh-my-posh/starship, downloads theme, zoxide/fzf, injects init into .zshrc |
+| `cli` | Tools via brew/apt/winget (bun, node, lazygit, etc.) |
+| `git` | Sets user.name, user.email, init.defaultBranch, enables LFS |
+| `editor` | Installs editor, installs VSCode/Cursor extensions |
+| `terminal` | Installs Nerd Fonts automatically |
+| `llm` | Installs Ollama, shows commands to pull local models |
+| `apps` | Installs apps via brew cask/winget (brave, discord, spotify, etc.) |
+
 ## What it Does
 
 1. **Checks initialization**: Verifies pact is initialized
@@ -71,7 +86,7 @@ pact sync theme    # Syncs theme module
 3. **Pulls changes**: Runs `git pull` to get latest from GitHub
 4. **Loads config**: Parses `pact.json`
 5. **Selects modules**: Shows picker or uses specified module
-6. **Applies configs**: Creates symlinks or copies files based on strategy
+6. **Applies configs**: Installs tools, configures system, creates symlinks
 7. **Reports results**: Shows success/failure counts
 
 ## Sync Strategies
@@ -107,6 +122,39 @@ Pact automatically detects your OS and applies the correct configurations:
 Running `pact sync shell` on macOS only applies the `darwin` config.
 
 ## Example Output
+
+```bash
+$ pact sync all
+
+Pulling latest changes...
+✓ Pulled latest changes
+
+Applying shell...
+Applying cli...
+Applying git...
+Applying terminal...
+
+Installations:
+  ○ bun                  already installed
+  ○ node                 already installed
+  ✓ lazygit              installed
+  ○ oh-my-posh           already installed
+  ✓ zoxide               installed
+
+Configuration:
+  ✓ shell.oh-my-posh-theme downloaded
+  ✓ shell.shell-config   added to .zshrc
+  ✓ git.user.name        cloudboy-jh
+  ✓ git.user.email       you@example.com
+  ✓ git.init.defaultBranch main
+
+Fonts:
+  ○ JetBrainsMono Nerd Font already installed
+
+Done: 6 applied, 8 skipped, 0 failed
+```
+
+### Module-Specific Sync
 
 ```bash
 $ pact sync editor

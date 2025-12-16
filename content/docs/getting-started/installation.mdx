@@ -5,7 +5,7 @@ description: Install the Pact CLI on macOS, Linux, or Windows
 
 Pact CLI is available for macOS, Linux, and Windows.
 
-## Homebrew (Recommended)
+## Homebrew (macOS/Linux)
 
 The easiest way to install Pact on macOS or Linux:
 
@@ -14,6 +14,23 @@ brew install cloudboy-jh/tap/pact
 ```
 
 This installs the latest version and makes it available as `pact` in your terminal.
+
+## Scoop (Windows)
+
+Install Pact on Windows using Scoop:
+
+```powershell
+scoop bucket add pact https://github.com/cloudboy-jh/pact-bucket
+scoop install pact
+```
+
+## One-Liner Install (Linux/macOS)
+
+Auto-detect your platform and install:
+
+```bash
+curl -fsSL https://github.com/cloudboy-jh/pact/releases/latest/download/pact_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/').tar.gz | tar -xz -C /usr/local/bin pact
+```
 
 ## GitHub Releases
 
@@ -43,7 +60,7 @@ curl -sL https://github.com/cloudboy-jh/pact/releases/latest/download/pact_linux
 sudo mv pact /usr/local/bin/
 ```
 
-### Windows
+### Windows (Manual)
 
 ```powershell
 # Download the Windows release
