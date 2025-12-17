@@ -7,7 +7,9 @@ This guide will get you from zero to a fully synced development environment.
 
 ## Overview
 
-Pact works like `git` — it creates a `.pact/` folder in your project directory that contains all your configuration files. Your GitHub token is stored globally in your OS keychain.
+Pact works like `git` — it creates a `.pact/` folder in your current directory that contains all your configuration files. Your GitHub token is stored globally in your OS keychain.
+
+Pact commands use git-like directory resolution: they check the current directory for `.pact/`, walk up the directory tree, and fall back to `~/.pact/`.
 
 ## 1. Install Pact
 
@@ -15,15 +17,17 @@ Pact works like `git` — it creates a `.pact/` folder in your project directory
 brew install cloudboy-jh/tap/pact
 ```
 
-## 2. Navigate to your project
+## 2. Initialize Pact
+
+Run `pact init` from wherever you want your `.pact/` folder to live:
 
 ```bash
-cd my-project
-```
+# For global configs (available everywhere)
+cd ~
+pact init
 
-## 3. Initialize Pact
-
-```bash
+# Or for project-specific configs
+cd ~/projects/my-app
 pact init
 ```
 
@@ -33,7 +37,7 @@ This will:
 3. Clone it to `./.pact/` in your current directory
 4. Create a default `pact.json` configuration
 
-## 4. Add your configurations
+## 3. Add your configurations
 
 Edit your pact configuration:
 
@@ -43,7 +47,7 @@ pact edit shell           # Edit shell configs
 pact edit web             # Open web editor in browser
 ```
 
-## 5. Sync your configs
+## 4. Sync your configs
 
 ```bash
 pact sync
@@ -64,7 +68,7 @@ Found 6 modules in pact.json:
 Select modules: 1,2,6
 ```
 
-## 6. Check status
+## 5. Check status
 
 ```bash
 pact
@@ -74,15 +78,32 @@ This shows an interactive status display with quick actions.
 
 ## On a New Machine
 
-When you're setting up a new machine or a new project:
+When you're setting up a new machine:
 
 ```bash
-cd my-project
+cd ~                      # Or wherever you want .pact/ to live
 pact init                 # Clones your existing pact repo to ./.pact/
 pact sync                 # Applies all configs
 ```
 
 Changes sync through GitHub — edit on one machine, pull on another.
+
+## Directory Resolution
+
+Pact finds your config using git-like tree walking. If you initialize in a parent directory, subdirectories automatically find it:
+
+```bash
+cd ~/projects/my-app
+pact init                 # Creates ~/projects/my-app/.pact/
+
+cd ~/projects/my-app/src/components
+pact sync                 # Works! Finds .pact/ in parent directory
+```
+
+Resolution order:
+1. Current directory
+2. Parent directories (walking up)
+3. Falls back to `~/.pact/`
 
 ## Common Commands
 

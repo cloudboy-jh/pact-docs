@@ -17,6 +17,49 @@ pact init [flags]
 |------|------|-------------|
 | `--from` | string | Fork pact from another user (not yet implemented) |
 
+## How It Works
+
+`pact init` creates a `.pact/` folder in your **current directory**. That's it.
+
+```bash
+pact init    # Creates .pact/ wherever you are
+```
+
+Where you run the command determines where your config lives:
+
+```bash
+# Global config (available everywhere)
+cd ~
+pact init              # Creates ~/.pact/
+
+# Project-specific config
+cd ~/projects/my-app
+pact init              # Creates ~/projects/my-app/.pact/
+```
+
+## Directory Resolution
+
+Pact finds your `.pact/` directory using git-like tree walking:
+
+1. Checks the current directory for `.pact/`
+2. Walks up the directory tree checking each parent
+3. Falls back to `~/.pact/` if nothing is found
+
+This means subdirectories automatically inherit their parent's pact config:
+
+```
+~/projects/my-app/
+├── .pact/                    # pact init was run here
+├── src/
+│   └── components/           # pact commands work here too
+└── tests/                    # and here
+```
+
+```bash
+cd ~/projects/my-app/src/components
+pact sync    # Finds and uses ~/projects/my-app/.pact/
+```
+
 ## What it Does
 
 ### 1. Check for existing pact
@@ -66,10 +109,12 @@ If no `pact.json` exists, creates one with this template:
 }
 ```
 
-## Example
+## Examples
+
+### First Time Setup
 
 ```bash
-$ cd my-project
+$ cd ~/projects/my-app
 $ pact init
 
 Opening browser for GitHub authentication...
@@ -89,9 +134,9 @@ Cloning to ./.pact/...
 Run 'pact sync' to apply your configurations.
 ```
 
-## On a New Machine
+### On a New Machine
 
-When running `pact init` on a machine where you've already set up pact:
+When running `pact init` on a machine where you've already authenticated:
 
 ```bash
 $ pact init
@@ -105,7 +150,21 @@ Cloning cloudboy-jh/my-pact to ./.pact/...
 ✓ Pact initialized!
 ```
 
-Your existing configurations are immediately available.
+### Global vs Project Config
+
+```bash
+# For configs you want everywhere
+cd ~
+pact init
+pact sync
+
+# For project-specific configs
+cd ~/projects/client-work
+pact init
+pact sync
+```
+
+Both use the same `my-pact` GitHub repo — the difference is just where the local `.pact/` clone lives.
 
 ## Token Storage
 
