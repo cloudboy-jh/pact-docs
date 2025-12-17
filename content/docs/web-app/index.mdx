@@ -1,0 +1,104 @@
+---
+title: Web App
+description: Edit your Pact configurations in the browser
+---
+
+The Pact web app provides a visual interface for editing your configurations without touching the command line.
+
+## Overview
+
+Access the web app at [pact-dev.com](https://pact-dev.com) or launch it from the CLI:
+
+```bash
+pact edit web
+```
+
+## Features
+
+### Visual Config Editor
+
+Edit your `pact.json` with a visual interface instead of raw JSON. The web app provides:
+
+- Syntax highlighting for all config files
+- Form-based editing for common settings
+- Live preview of changes
+- Validation before saving
+
+### GitHub Integration
+
+The web app connects directly to your `my-pact` GitHub repo:
+
+- Authenticate once with GitHub OAuth
+- Changes save directly to your repo
+- Full version history via GitHub
+- Works from any device with a browser
+
+### File Browser
+
+Navigate your pact repo structure visually:
+
+```
+my-pact/
+├── pact.json          # Click to edit
+├── shell/
+│   └── .zshrc         # Edit shell configs
+├── editor/
+│   └── nvim/          # Browse neovim setup
+└── prompts/
+    └── default.md     # Edit AI prompts
+```
+
+## Getting Started
+
+### 1. Open the Web App
+
+```bash
+pact edit web
+```
+
+Or navigate directly to [pact-dev.com](https://pact-dev.com)
+
+### 2. Authenticate with GitHub
+
+Click "Sign in with GitHub" to authorize the app. This uses the same OAuth flow as the CLI.
+
+### 3. Start Editing
+
+Your `my-pact` repo loads automatically. Click any file to edit it.
+
+### 4. Save Changes
+
+Changes are committed directly to your GitHub repo. Pull them down on any machine:
+
+```bash
+cd ~/my-project
+pact sync
+```
+
+## When to Use the Web App
+
+| Use Case | Web App | CLI |
+|----------|---------|-----|
+| Quick edits from any device | Yes | No |
+| Visual JSON editing | Yes | No |
+| Bulk file operations | No | Yes |
+| Offline editing | No | Yes |
+| Scripting/automation | No | Yes |
+
+## Syncing Changes
+
+After editing in the web app, pull changes to your local machine:
+
+```bash
+pact sync
+```
+
+The CLI automatically pulls the latest changes from GitHub before applying configs.
+
+## Mobile Support
+
+The web app works on mobile browsers for quick edits on the go. Perfect for:
+
+- Tweaking a prompt while away from your desk
+- Checking your config structure
+- Quick fixes from your phone

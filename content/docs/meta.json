@@ -24,6 +24,8 @@
     "modules/ai",
     "modules/tools",
     "modules/theme",
+    "---Web App---",
+    "web-app/index",
     "---Configuration---",
     "configuration/pact-json",
     "configuration/sync-strategies",
