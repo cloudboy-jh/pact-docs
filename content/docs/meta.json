@@ -11,6 +11,7 @@
     "cli/overview",
     "cli/init",
     "cli/sync",
+    "cli/read",
     "cli/edit",
     "cli/push",
     "cli/secrets",

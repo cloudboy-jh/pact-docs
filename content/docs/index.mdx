@@ -34,13 +34,17 @@ pact init
 
 This authenticates with GitHub, creates your `my-pact` repo, and clones it to `./.pact/`.
 
-### 3. Sync your configs
+### 3. Import or Sync
 
 ```bash
+# Import your existing setup into pact
+pact read
+
+# Or sync from an existing pact config
 pact sync
 ```
 
-Select which modules to sync or sync everything at once.
+Use `pact read` to bootstrap from your current environment, or `pact sync` to apply an existing configuration.
 
 ## What's in a Pact
 

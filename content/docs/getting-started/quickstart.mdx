@@ -105,16 +105,34 @@ Resolution order:
 2. Parent directories (walking up)
 3. Falls back to `~/.pact/`
 
+## Bootstrap from Existing Setup
+
+Already have a configured development environment? Use `pact read` to import your existing setup:
+
+```bash
+cd my-project
+pact read                 # Scans your local environment
+# Select which tools and configs to import...
+# ✓ Updated pact.json
+# ✓ Copied config files to .pact/
+
+pact push -m "Initial import from macbook"
+```
+
+This detects your installed CLI tools, shell config, editor settings, git config, and more.
+
 ## Common Commands
 
 | Command | Description |
 |---------|-------------|
 | `pact` | Interactive status with quick actions |
 | `pact init` | Initialize pact in current directory |
-| `pact edit` | Edit pact.json in $EDITOR |
-| `pact edit web` | Open web editor |
 | `pact sync` | Interactive sync with module picker |
 | `pact sync shell` | Sync specific module |
+| `pact read` | Scan local environment and import to pact |
+| `pact read --diff` | Show drift between local and pact.json |
+| `pact edit` | Edit pact.json in $EDITOR |
+| `pact edit web` | Open web editor |
 | `pact push` | Commit and push changes |
 | `pact status` | Show status (non-interactive) |
 
